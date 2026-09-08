@@ -244,6 +244,54 @@ def compute_advantage(
         )
         data.batch["advantages"] = advantages
         data.batch["returns"] = returns
+    elif adv_estimator == AdvantageEstimator.FLOW_BALANCE:
+        from verl.trainer.ppo.flowbalance_adv import compute_flowbalance_advantage
+
+        rewards = data.batch.get("token_level_rewards", data.batch.get("token_level_scores"))
+        ref_lp = data.batch.get("ref_log_prob", data.batch.get("teacher_ref_log_prob"))
+        old_lp = data.batch["old_log_probs"]
+        teacher_lp = data.batch.get("teacher_log_prob", None)
+        sd_mask = data.batch.get("self_distillation_mask", None)
+
+        algo_cfg = getattr(config, "algorithm", {})
+        beta_q = algo_cfg.get("beta_q", 1.0) if hasattr(algo_cfg, "get") else getattr(algo_cfg, "beta_q", 1.0)
+        eta_R = algo_cfg.get("eta_R", 15.0) if hasattr(algo_cfg, "get") else getattr(algo_cfg, "eta_R", 15.0)
+        clip_B = algo_cfg.get("clip_B", 4.0) if hasattr(algo_cfg, "get") else getattr(algo_cfg, "clip_B", 4.0)
+        rho = algo_cfg.get("rho", 1.0) if hasattr(algo_cfg, "get") else getattr(algo_cfg, "rho", 1.0)
+        gate_no_context = (
+            algo_cfg.get("gate_no_context", "fallback_gspo")
+            if hasattr(algo_cfg, "get")
+            else getattr(algo_cfg, "gate_no_context", "fallback_gspo")
+        )
+        subtb_lambda = (
+            algo_cfg.get("subtb_lambda", 1.0)
+            if hasattr(algo_cfg, "get")
+            else getattr(algo_cfg, "subtb_lambda", 1.0)
+        )
+
+        advantages, returns, metrics = compute_flowbalance_advantage(
+            token_level_rewards=rewards,
+            ref_log_prob=ref_lp,
+            old_log_prob=old_lp,
+            response_mask=data.batch["response_mask"],
+            index=data.non_tensor_batch["uid"],
+            teacher_log_prob=teacher_lp,
+            self_distillation_mask=sd_mask,
+            beta_q=beta_q,
+            eta_R=eta_R,
+            clip_B=clip_B,
+            rho=rho,
+            gate_no_context=gate_no_context,
+            norm_adv_by_std_in_grpo=norm_adv_by_std_in_grpo,
+            subtb_lambda=subtb_lambda,
+            config=config,
+        )
+        data.batch["advantages"] = advantages
+        data.batch["returns"] = returns
+        if metrics and hasattr(data, "meta_info"):
+            metrics_dict = data.meta_info.setdefault("metrics", {})
+            for k, v in metrics.items():
+                metrics_dict[k] = [v]
     else:
         # handle all other adv estimator type other than GAE and GRPO
         adv_estimator_fn = core_algos.get_adv_estimator_fn(adv_estimator)
