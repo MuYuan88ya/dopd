@@ -1,0 +1,32 @@
+{
+  "flowbalance": {
+    "clean_pass_at_1_mean": 1.0,
+    "clean_pass_at_1_std": 0.0,
+    "density_purity_mean": 0.8385376930236816,
+    "density_purity_std": 0.0,
+    "von_neumann_entropy_mean": 0.3863421380519867,
+    "von_neumann_entropy_std": 0.0,
+    "decoherence_rate_mean": 0.0,
+    "decoherence_rate_std": 0.0
+  },
+  "grpo": {
+    "clean_pass_at_1_mean": 0.0,
+    "clean_pass_at_1_std": 0.0,
+    "density_purity_mean": 0.2504745509028435,
+    "density_purity_std": 0.0003381976437162368,
+    "von_neumann_entropy_mean": 1.3853665223121643,
+    "von_neumann_entropy_std": 0.0006542369614681935,
+    "decoherence_rate_mean": 1.0,
+    "decoherence_rate_std": 0.0
+  },
+  "ppo": {
+    "clean_pass_at_1_mean": 0.0,
+    "clean_pass_at_1_std": 0.0,
+    "density_purity_mean": 0.2504512757658959,
+    "density_purity_std": 0.00031417824457364755,
+    "von_neumann_entropy_mean": 1.3854113965034485,
+    "von_neumann_entropy_std": 0.0006082474719706492,
+    "decoherence_rate_mean": 1.0,
+    "decoherence_rate_std": 0.0
+  }
+}
