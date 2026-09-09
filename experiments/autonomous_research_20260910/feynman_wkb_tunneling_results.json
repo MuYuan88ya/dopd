@@ -1,0 +1,68 @@
+{
+  "flowbalance": {
+    "clean_pass": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "sampled_pass": {
+      "mean": 0.3301813801142105,
+      "std": 0.0017480385671654385
+    },
+    "wkb_defect": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "trap_rate": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "tunneling_fidelity": {
+      "mean": 1.0,
+      "std": 0.0
+    }
+  },
+  "grpo": {
+    "clean_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "sampled_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "wkb_defect": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "trap_rate": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "tunneling_fidelity": {
+      "mean": 0.0,
+      "std": 0.0
+    }
+  },
+  "ppo": {
+    "clean_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "sampled_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "wkb_defect": {
+      "mean": 0.95,
+      "std": 0.0
+    },
+    "trap_rate": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "tunneling_fidelity": {
+      "mean": 0.0,
+      "std": 0.0
+    }
+  }
+}
