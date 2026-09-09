@@ -1,0 +1,52 @@
+{
+  "ppo": {
+    "algo": "ppo",
+    "pass_rate_mean": 0.7935092076659203,
+    "pass_rate_std": 0.00043787945497359446,
+    "method_a_prob_mean": 0.9936852157115936,
+    "method_b_prob_mean": 0.003729110845597461,
+    "method_c_prob_mean": 0.0025856588181341067,
+    "branch_correct_mean": 0.9970211014151573,
+    "method_entropy_mean": 0.04240180505439639
+  },
+  "grpo": {
+    "algo": "grpo",
+    "pass_rate_mean": 0.7935092076659203,
+    "pass_rate_std": 0.00043787945497359446,
+    "method_a_prob_mean": 0.9936852157115936,
+    "method_b_prob_mean": 0.003729110845597461,
+    "method_c_prob_mean": 0.0025856588181341067,
+    "branch_correct_mean": 0.9970211014151573,
+    "method_entropy_mean": 0.04240180505439639
+  },
+  "tb": {
+    "algo": "tb",
+    "pass_rate_mean": 0.7935092076659203,
+    "pass_rate_std": 0.00043787945497359446,
+    "method_a_prob_mean": 0.9936852157115936,
+    "method_b_prob_mean": 0.003729110845597461,
+    "method_c_prob_mean": 0.0025856588181341067,
+    "branch_correct_mean": 0.9970211014151573,
+    "method_entropy_mean": 0.04240180505439639
+  },
+  "step_subtb": {
+    "algo": "step_subtb",
+    "pass_rate_mean": 0.7935092076659203,
+    "pass_rate_std": 0.00043787945497359446,
+    "method_a_prob_mean": 0.9936852157115936,
+    "method_b_prob_mean": 0.0037291122134774923,
+    "method_c_prob_mean": 0.002585658963653259,
+    "branch_correct_mean": 0.9970211014151573,
+    "method_entropy_mean": 0.04240181157365441
+  },
+  "dag_subtb": {
+    "algo": "dag_subtb",
+    "pass_rate_mean": 0.7887949720025063,
+    "pass_rate_std": 0.002291123531585961,
+    "method_a_prob_mean": 0.9862128049135208,
+    "method_b_prob_mean": 0.011325644212774932,
+    "method_c_prob_mean": 0.002461554904584773,
+    "branch_correct_mean": 0.9962033107876778,
+    "method_entropy_mean": 0.07844588160514832
+  }
+}
