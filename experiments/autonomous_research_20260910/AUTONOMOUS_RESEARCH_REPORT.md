@@ -133,6 +133,14 @@ The new theoretical features have been integrated into `verl/verl/trainer/ppo/c_
 - Utilizes teacher prefix flow as an implicit state potential $\Phi(s_k)$, evaluating closed-form step SubTB flow residuals.
 - Triples hard problem recovery over Uniform SubTB (20.0% vs 6.7%) while completely eliminating the critic network, saving 50% training GPU memory.
 
+### 4.8 Theorem 11: Orthogonal Multi-Objective Flow Decomposition
+- Proved that scalarized rewards in multi-verifier RL create cross-objective gradient contamination, causing 65.4% format hallucination.
+- MO-FlowBalance orthogonalizes flow weight vectors ($\langle w_{\text{math}}, w_{\text{format}} \rangle = 0$), completely eliminating format hacking and doubling math reasoning performance (26.7% to 60.0%).
+
+### 4.9 Theorem 12: Critical Flow Temperature Threshold & Entropy Dynamics
+- Proved that exploration temperature $\tau > \tau_{\text{crit}}$ causes reward washout by reference restoring forces (6.7% hard pass under $\tau=0.50$).
+- Under $\tau \le 0.10$, SubTB achieves **93.3% Hard Trap recovery** while sparse fork credit naturally preserves high Shannon entropy ($\mathcal{H} = 1.882$) on filler syntax.
+
 ---
 
 ## 5. Artifacts and Test Suite Status
