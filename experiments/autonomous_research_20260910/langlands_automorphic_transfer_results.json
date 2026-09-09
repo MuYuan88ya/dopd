@@ -1,0 +1,25 @@
+{
+  "theorem": 68,
+  "title": "The Langlands Program, Automorphic Representations & L-Function Symmetries in Multi-Task Cross-Domain Transfer",
+  "n_primes": 8,
+  "n_tasks": 4,
+  "n_steps": 120,
+  "metrics": {
+    "grpo": {
+      "final_langlands_defect": 2.089027071434143,
+      "final_ramanujan_violation": 1.6947826181996877,
+      "final_hecke_commutativity_defect": 3.957551910136101,
+      "final_cross_task_retention_pct": 0.0,
+      "final_pass_rate_pct": 0.0,
+      "negative_interference_trap_rate_pct": 100.0
+    },
+    "cfb": {
+      "final_langlands_defect": 0.0,
+      "final_ramanujan_violation": 0.0,
+      "final_hecke_commutativity_defect": 3.1191568933673205e-17,
+      "final_cross_task_retention_pct": 99.8317832665924,
+      "final_pass_rate_pct": 100.0,
+      "negative_interference_trap_rate_pct": 0.0
+    }
+  }
+}
