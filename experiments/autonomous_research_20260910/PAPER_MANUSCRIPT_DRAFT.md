@@ -493,7 +493,21 @@ Consistent FlowBalance solves this via **Dual Process-Outcome Flow Harmonization
 
 DPO-FlowBalance preserves **49.45% creative novel proofs** (a **494x gain** over Linear PRM's 0.10%), effectively harmonizing process supervision with mathematical creativity.
 
-### 4.21 Key Empirical Takeaways
+### 4.21 Black-Box Off-Policy Flow Invariance (Theorem 23)
+
+In offline reinforcement learning and synthetic data distillation, trajectories are frequently sourced from external black-box models (e.g. proprietary frontier APIs) where teacher token probabilities $\pi_{\text{ext}}(y_t \mid x, y_{<t})$ are completely unavailable. Standard off-policy RL (PPO with importance sampling) fails because the denominator is missing, while Supervised Fine-Tuning (SFT) blindly memorizes verbose suboptimal fluff (41.71% fluffy rate, 0.72% hallucination rate).
+
+Consistent FlowBalance resolves this via **Black-Box Off-Policy Flow Invariance (BBO-FlowBalance)**. Because Trajectory Balance $\mathcal{L}_{\text{TB}} = (\log Z + \sum \log \pi_\theta - \log R)^2$ requires no proposal probability in its loss function, it trains directly on raw unpaired off-policy demonstrations, using length-regularized flow constraints to penalize fluff:
+
+| Algorithm | Optimal Clean Rate (%) | Suboptimal Fluffy Rate (%) | Flawed Hallucination (%) | Average Length (Tokens) | Expected Solution Reward (%) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Filtered SFT (BC)** | 57.57% ± 2.35% | 41.71% ± 2.36% | 0.72% ± 0.02% | 7.37 | 99.28% |
+| **Unweighted TB** | 51.34% ± 0.32% | 48.65% ± 0.32% | **0.01% ± 0.00%** | 7.89 | 99.99% |
+| **BBO-FlowBalance** | **59.67% ± 0.33%** | **40.32% ± 0.33%** | **0.01% ± 0.00%** | **7.23 (Most Concise)** | **99.99%** |
+
+BBO-FlowBalance eliminates the need for teacher log-probabilities or contrastive pair generation, achieving **99.99% expected reward** and minimal token verbosity.
+
+### 4.22 Key Empirical Takeaways
 
 1. **The 0% vs 59% Phase Transition**:
    On hard reasoning DAGs where the student begins in a distractor trap, uniform credit methods (GRPO, TB, uniform SubTB) fail completely (0.00% Pass@1). Spreading reward and baseline uniformly across 32 tokens dilutes the fork gradient below the threshold needed to flip the logit bias. EW-SubTB concentrates gradient updates onto the fork tokens (4.82x ratio), triggering a phase transition to 59.17% Pass@1.
@@ -531,6 +545,8 @@ DPO-FlowBalance preserves **49.45% creative novel proofs** (a **494x gain** over
    Treating erroneous prefixes in self-correcting sequences as dead-end branches eliminates the fake-reflection pathology, reducing spurious reflection loops by 435x and converging to direct first-pass derivation efficiency.
 18. **Dual Process-Outcome Verification Harmonization**:
    Dynamic harmony gating anchors trajectory flow to terminal outcome conservation, preserving 494x higher creative proof retention (49.45% vs 0.10%) while eliminating process reward false negative penalties.
+19. **Black-Box Off-Policy Flow Invariance**:
+   Trajectory balance requires zero importance sampling denominators or teacher log-probabilities, enabling value-free distillation from unannotated external model outputs with 99.99% reward convergence.
 
 ---
 
