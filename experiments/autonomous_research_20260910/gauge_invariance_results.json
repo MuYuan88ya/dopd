@@ -1,0 +1,38 @@
+{
+  "flowbalance": {
+    "canonical_acc_mean": 1.0,
+    "canonical_acc_std": 0.0,
+    "worst_case_acc_mean": 0.984,
+    "worst_case_acc_std": 0.008000000000000007,
+    "mean_perm_acc_mean": 0.9993333333333332,
+    "mean_perm_acc_std": 0.000333333333333341,
+    "permutation_spread_mean": 0.016000000000000014,
+    "permutation_spread_std": 0.008000000000000007,
+    "gauge_holonomy_mean": 1.27777777777778e-05,
+    "gauge_holonomy_std": 6.3888888888889e-06
+  },
+  "grpo": {
+    "canonical_acc_mean": 0.9960000000000001,
+    "canonical_acc_std": 0.008000000000000007,
+    "worst_case_acc_mean": 0.0,
+    "worst_case_acc_std": 0.0,
+    "mean_perm_acc_mean": 0.17616666666666667,
+    "mean_perm_acc_std": 0.1618363370816332,
+    "permutation_spread_mean": 0.9960000000000001,
+    "permutation_spread_std": 0.008000000000000007,
+    "gauge_holonomy_mean": 0.08306430555555556,
+    "gauge_holonomy_std": 0.05260477099322836
+  },
+  "ppo": {
+    "canonical_acc_mean": 0.9960000000000001,
+    "canonical_acc_std": 0.008000000000000007,
+    "worst_case_acc_mean": 0.0,
+    "worst_case_acc_std": 0.0,
+    "mean_perm_acc_mean": 0.16183333333333333,
+    "mean_perm_acc_std": 0.12677780212289183,
+    "permutation_spread_mean": 0.9960000000000001,
+    "permutation_spread_std": 0.008000000000000007,
+    "gauge_holonomy_mean": 0.08667402777777777,
+    "gauge_holonomy_std": 0.05428835010299967
+  }
+}
