@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "theorem": "Theorem 63: Holographic Entanglement Entropy, Ryu-Takayanagi Area Law & Context Retention",
+    "date": "2026-09-10",
+    "n_seeds": 5,
+    "n_problems": 40,
+    "n_rollouts": 16,
+    "total_tokens": 64,
+    "subregion_len": 24,
+    "s_rt_ideal": 1.0593512767826485
+  },
+  "flowbalance": {
+    "greedy_pass_mean": 1.0,
+    "greedy_pass_std": 0.0,
+    "sampled_pass_mean": 1.0,
+    "sampled_pass_std": 0.0,
+    "rt_defect_mean": 0.004137304559484799,
+    "rt_defect_std": 0.00012414210487458145,
+    "entanglement_entropy_mean": 1.0593741641166852,
+    "entanglement_entropy_std": 0.0001620804279593919,
+    "context_retention_mean": 0.9958759589996145,
+    "context_retention_std": 0.0001234315812467636,
+    "horizon_trap_rate_mean": 0.0,
+    "horizon_trap_rate_std": 0.0
+  },
+  "grpo": {
+    "greedy_pass_mean": 0.0,
+    "greedy_pass_std": 0.0,
+    "sampled_pass_mean": 0.0,
+    "sampled_pass_std": 0.0,
+    "rt_defect_mean": 10.942826002440347,
+    "rt_defect_std": 0.004744126328411472,
+    "entanglement_entropy_mean": 12.002177279222993,
+    "entanglement_entropy_std": 0.004744126328411698,
+    "context_retention_mean": 0.004210644784507188,
+    "context_retention_std": 1.0280672665368036e-05,
+    "horizon_trap_rate_mean": 1.0,
+    "horizon_trap_rate_std": 0.0
+  },
+  "ppo": {
+    "greedy_pass_mean": 0.0,
+    "greedy_pass_std": 0.0,
+    "sampled_pass_mean": 0.0,
+    "sampled_pass_std": 0.0,
+    "rt_defect_mean": 7.342982864744387,
+    "rt_defect_std": 0.0031118324094292675,
+    "entanglement_entropy_mean": 8.402334141527035,
+    "entanglement_entropy_std": 0.0031118324094293773,
+    "context_retention_mean": 0.05305853300600669,
+    "context_retention_std": 6.707209411794477e-05,
+    "horizon_trap_rate_mean": 1.0,
+    "horizon_trap_rate_std": 0.0
+  }
+}
