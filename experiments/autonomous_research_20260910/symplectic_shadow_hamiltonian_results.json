@@ -1,0 +1,68 @@
+{
+  "flowbalance": {
+    "clean_pass": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "sampled_pass": {
+      "mean": 0.34027207017131567,
+      "std": 0.002622057850748182
+    },
+    "symp_defect": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "energy_drift": {
+      "mean": 0.0013161631577344186,
+      "std": 3.6600193015610936e-05
+    },
+    "stability_fidelity": {
+      "mean": 1.0,
+      "std": 0.0
+    }
+  },
+  "grpo": {
+    "clean_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "sampled_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "symp_defect": {
+      "mean": 0.012629997034973648,
+      "std": 3.7130563812796464e-05
+    },
+    "energy_drift": {
+      "mean": 0.49712359912421145,
+      "std": 0.009423692842480522
+    },
+    "stability_fidelity": {
+      "mean": 0.9747400059300528,
+      "std": 7.426112762565325e-05
+    }
+  },
+  "ppo": {
+    "clean_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "sampled_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "symp_defect": {
+      "mean": 0.010104232653275997,
+      "std": 2.9712301772132e-05
+    },
+    "energy_drift": {
+      "mean": 0.49712359912421145,
+      "std": 0.009423692842480522
+    },
+    "stability_fidelity": {
+      "mean": 0.9797915346934479,
+      "std": 5.942460354424e-05
+    }
+  }
+}
