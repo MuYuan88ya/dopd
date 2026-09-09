@@ -1,0 +1,38 @@
+{
+  "flowbalance": {
+    "pass_at_1_mean": 1.0,
+    "pass_at_1_std": 0.0,
+    "dissipated_work_mean": 0.0012000000000000001,
+    "dissipated_work_std": 0.0016,
+    "rambling_tokens_mean": 0.0,
+    "rambling_tokens_std": 0.0,
+    "thermodynamic_efficiency_mean": 0.9998823529411764,
+    "thermodynamic_efficiency_std": 0.0001568627450980242,
+    "entropy_production_mean": 0.0012000000000000001,
+    "entropy_production_std": 0.0016
+  },
+  "grpo": {
+    "pass_at_1_mean": 1.0,
+    "pass_at_1_std": 0.0,
+    "dissipated_work_mean": 0.396,
+    "dissipated_work_std": 0.21245234759823203,
+    "rambling_tokens_mean": 0.0,
+    "rambling_tokens_std": 0.0,
+    "thermodynamic_efficiency_mean": 0.9625521757397453,
+    "thermodynamic_efficiency_std": 0.019422944008270777,
+    "entropy_production_mean": 0.396,
+    "entropy_production_std": 0.21245234759823203
+  },
+  "ppo": {
+    "pass_at_1_mean": 1.0,
+    "pass_at_1_std": 0.0,
+    "dissipated_work_mean": 0.6923999999999999,
+    "dissipated_work_std": 0.301793041669287,
+    "rambling_tokens_mean": 0.0,
+    "rambling_tokens_std": 0.0,
+    "thermodynamic_efficiency_mean": 0.9362195279066802,
+    "thermodynamic_efficiency_std": 0.026895498630316976,
+    "entropy_production_mean": 0.6923999999999999,
+    "entropy_production_std": 0.301793041669287
+  }
+}
