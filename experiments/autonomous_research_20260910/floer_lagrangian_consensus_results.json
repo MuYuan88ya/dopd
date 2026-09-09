@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "theorem": "Theorem 65: Floer Homology, Lagrangian Intersections & Arnold's Conjecture in Multi-Agent Consensus",
+    "date": "2026-09-10",
+    "n_seeds": 5,
+    "n_problems": 40,
+    "n_rollouts": 16,
+    "n_agents": 4
+  },
+  "flowbalance": {
+    "greedy_pass_mean": 1.0,
+    "greedy_pass_std": 0.0,
+    "sampled_pass_mean": 1.0,
+    "sampled_pass_std": 0.0,
+    "floer_defect_mean": 0.0,
+    "floer_defect_std": 0.0,
+    "intersections_mean": 5.016249999999999,
+    "intersections_std": 0.03219811718097812,
+    "consensus_trap_rate_mean": 0.0,
+    "consensus_trap_rate_std": 0.0,
+    "floer_fidelity_mean": 0.9994960968657297,
+    "floer_fidelity_std": 1.1046952260870147e-05
+  },
+  "grpo": {
+    "greedy_pass_mean": 0.0,
+    "greedy_pass_std": 0.0,
+    "sampled_pass_mean": 0.0,
+    "sampled_pass_std": 0.0,
+    "floer_defect_mean": 4.360307361431742,
+    "floer_defect_std": 0.01724407283675821,
+    "intersections_mean": 0.48125,
+    "intersections_std": 0.017314868971493844,
+    "consensus_trap_rate_mean": 1.0,
+    "consensus_trap_rate_std": 0.0,
+    "floer_fidelity_mean": 0.1203125,
+    "floer_fidelity_std": 0.004328717242873461
+  },
+  "ppo": {
+    "greedy_pass_mean": 0.0,
+    "greedy_pass_std": 0.0,
+    "sampled_pass_mean": 0.0,
+    "sampled_pass_std": 0.0,
+    "floer_defect_mean": 2.954628697299777,
+    "floer_defect_std": 0.02042279198032117,
+    "intersections_mean": 1.5015625,
+    "intersections_std": 0.020155644370746417,
+    "consensus_trap_rate_mean": 1.0,
+    "consensus_trap_rate_std": 0.0,
+    "floer_fidelity_mean": 0.375390625,
+    "floer_fidelity_std": 0.005038911092686604
+  }
+}
