@@ -1,0 +1,20 @@
+{
+  "theorem": 73,
+  "title": "Contact Geometry, Reeb Vector Fields & Legendrian Knots in Non-Holonomic Reasoning Chains",
+  "n_points": 50,
+  "n_steps": 120,
+  "metrics": {
+    "grpo": {
+      "final_contact_form_defect": 8.246388404214333,
+      "final_transverse_jam_rate_pct": 100.0,
+      "final_pass_rate_pct": 0.0,
+      "non_holonomic_derail_rate_pct": 100.0
+    },
+    "cfb": {
+      "final_contact_form_defect": 0.26582921643586455,
+      "final_transverse_jam_rate_pct": 0.0,
+      "final_pass_rate_pct": 100.0,
+      "non_holonomic_derail_rate_pct": 0.0
+    }
+  }
+}
