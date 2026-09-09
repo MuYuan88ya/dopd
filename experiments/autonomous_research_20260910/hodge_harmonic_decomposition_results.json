@@ -1,0 +1,53 @@
+{
+  "metadata": {
+    "theorem": "Theorem 67: Hodge Theory, Harmonic Forms & Hodge Decomposition on Deduction Graphs",
+    "date": "2026-09-10",
+    "n_seeds": 5,
+    "n_problems": 40,
+    "n_rollouts": 16,
+    "n_vertices": 12,
+    "n_edges": 18
+  },
+  "flowbalance": {
+    "greedy_pass_mean": 1.0,
+    "greedy_pass_std": 0.0,
+    "sampled_pass_mean": 1.0,
+    "sampled_pass_std": 0.0,
+    "hodge_defect_mean": 0.0,
+    "hodge_defect_std": 0.0,
+    "coexact_vorticity_mean": 0.0,
+    "coexact_vorticity_std": 0.0,
+    "vortex_trap_rate_mean": 0.0,
+    "vortex_trap_rate_std": 0.0,
+    "harmonic_fidelity_mean": 0.9995056873714864,
+    "harmonic_fidelity_std": 8.407741209483458e-06
+  },
+  "grpo": {
+    "greedy_pass_mean": 0.0,
+    "greedy_pass_std": 0.0,
+    "sampled_pass_mean": 0.0,
+    "sampled_pass_std": 0.0,
+    "hodge_defect_mean": 2.8425938719628228,
+    "hodge_defect_std": 0.0014385431888930098,
+    "coexact_vorticity_mean": 2.8425938719628228,
+    "coexact_vorticity_std": 0.0014385431888930098,
+    "vortex_trap_rate_mean": 1.0,
+    "vortex_trap_rate_std": 0.0,
+    "harmonic_fidelity_mean": 0.2602867372051768,
+    "harmonic_fidelity_std": 9.84905936400714e-05
+  },
+  "ppo": {
+    "greedy_pass_mean": 0.0,
+    "greedy_pass_std": 0.0,
+    "sampled_pass_mean": 0.0,
+    "sampled_pass_std": 0.0,
+    "hodge_defect_mean": 1.6549007976404178,
+    "hodge_defect_std": 0.0013586153456907602,
+    "coexact_vorticity_mean": 1.6549007976404178,
+    "coexact_vorticity_std": 0.0013586153456907602,
+    "vortex_trap_rate_mean": 1.0,
+    "vortex_trap_rate_std": 0.0,
+    "harmonic_fidelity_mean": 0.4303563413777979,
+    "harmonic_fidelity_std": 0.0002003161417429242
+  }
+}
