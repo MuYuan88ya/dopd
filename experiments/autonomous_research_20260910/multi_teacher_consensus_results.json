@@ -1,0 +1,23 @@
+{
+  "uniform_teacher_avg": {
+    "algo": "uniform_teacher_avg",
+    "overall_acc": 1.0,
+    "algebra_acc": 1.0,
+    "geometry_acc": 1.0,
+    "poison_rate": 0.0
+  },
+  "majority_voting": {
+    "algo": "majority_voting",
+    "overall_acc": 0.9666666666666668,
+    "algebra_acc": 0.9722222222222222,
+    "geometry_acc": 0.9583333333333334,
+    "poison_rate": 0.0
+  },
+  "consensus_flowbalance": {
+    "algo": "consensus_flowbalance",
+    "overall_acc": 0.9333333333333332,
+    "algebra_acc": 1.0,
+    "geometry_acc": 0.8333333333333334,
+    "poison_rate": 0.03333333333333333
+  }
+}

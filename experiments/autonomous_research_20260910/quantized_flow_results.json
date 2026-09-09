@@ -1,0 +1,44 @@
+{
+  "ppo_fp32": {
+    "algo": "ppo",
+    "precision": "fp32",
+    "final_pass_mean": 1.0,
+    "final_pass_std": 0.0,
+    "avg_convergence_epoch": 8.166666666666666
+  },
+  "ppo_fp8": {
+    "algo": "ppo",
+    "precision": "fp8",
+    "final_pass_mean": 0.0,
+    "final_pass_std": 0.0,
+    "avg_convergence_epoch": 90.0
+  },
+  "ppo_int8": {
+    "algo": "ppo",
+    "precision": "int8",
+    "final_pass_mean": 0.9791666666666666,
+    "final_pass_std": 0.046584749531245626,
+    "avg_convergence_epoch": 58.833333333333336
+  },
+  "flowbalance_fp32": {
+    "algo": "flowbalance",
+    "precision": "fp32",
+    "final_pass_mean": 0.041666666666666664,
+    "final_pass_std": 0.05892556509887896,
+    "avg_convergence_epoch": 90.0
+  },
+  "flowbalance_fp8": {
+    "algo": "flowbalance",
+    "precision": "fp8",
+    "final_pass_mean": 0.9166666666666666,
+    "final_pass_std": 0.09316949906249122,
+    "avg_convergence_epoch": 10.0
+  },
+  "flowbalance_int8": {
+    "algo": "flowbalance",
+    "precision": "int8",
+    "final_pass_mean": 0.0,
+    "final_pass_std": 0.0,
+    "avg_convergence_epoch": 90.0
+  }
+}
