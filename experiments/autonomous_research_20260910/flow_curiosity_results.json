@@ -1,0 +1,32 @@
+{
+  "grpo": {
+    "algo": "grpo",
+    "discovery_rate": 0.0,
+    "avg_discovery_epoch": 120.0,
+    "final_pass_rate": 0.0
+  },
+  "ppo_entropy": {
+    "algo": "ppo_entropy",
+    "discovery_rate": 0.16666666666666666,
+    "avg_discovery_epoch": 112.5,
+    "final_pass_rate": 0.16666666666666666
+  },
+  "flowbalance": {
+    "algo": "flowbalance",
+    "discovery_rate": 0.16666666666666666,
+    "avg_discovery_epoch": 117.16666666666667,
+    "final_pass_rate": 0.0
+  },
+  "fc_flowbalance": {
+    "algo": "fc_flowbalance",
+    "discovery_rate": 0.16666666666666666,
+    "avg_discovery_epoch": 112.5,
+    "final_pass_rate": 0.0
+  },
+  "adaptive_fc_flowbalance": {
+    "algo": "adaptive_fc_flowbalance",
+    "discovery_rate": 0.16666666666666666,
+    "avg_discovery_epoch": 112.5,
+    "final_pass_rate": 0.0
+  }
+}

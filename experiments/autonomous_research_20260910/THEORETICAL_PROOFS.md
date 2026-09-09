@@ -301,6 +301,23 @@ The intra-group outcome reward variance strictly vanishes ($\mathrm{Var}_{\mathc
      $$\|\nabla_\theta \mathcal{L}_{\text{FlowBalance}}\| \le 2 \|\nabla_\theta \log \pi_\theta\| \cdot \|\text{target} - \log \pi_\theta\| = \mathcal{O}(1)$$
    - Unlocks accelerated sample efficiency and continuous multi-epoch replay utilization without policy collapse.
 
+---
 
-
-
+### Theorem 17 (The Flow-Curiosity Principle for Sparse-Reward Trap Escape)
+**Statement**: In deep sequential reasoning tasks where environmental outcome feedback is sparse ($R_{\text{env}}(\tau) = 0$ for almost all sampled rollouts), standard policy gradients experience zero advantage variance $\text{Var}_G(R) = 0$, trapping exploration in initial distractor modes (0% discovery rate).
+1. **Epistemic Flow Residual Variance as Exploration Indicator**:
+   Let the flow consistency residual at token/step $t$ across rollout $i \in \{1, \dots, G\}$ be:
+   $$\delta_{i, t} = \log \pi_\theta(y_{i, t} \mid s_{i, t-1}) - \log \pi_{\text{ref}}(y_{i, t} \mid s_{i, t-1})$$
+   The group empirical variance across the rollouts:
+   $$\mathcal{U}_t = \frac{1}{G-1} \sum_{i=1}^G \left( \delta_{i, t} - \bar{\delta}_t \right)^2$$
+   measures epistemic disagreement among rollouts passing through step $t$.
+2. **Adaptive Curiosity Flow Simplex Concentration & Phase Switching**:
+   By assigning intrinsic curiosity reward $R_{\text{curiosity}} = \eta_t \sum_{t=1}^L \mathcal{U}_t$ and concentrating credit on high-disagreement decision points:
+   $$w_t = \frac{\mathcal{U}_t + \epsilon}{\sum_{j=1}^L (\mathcal{U}_j + \epsilon)}$$
+   where $\eta_t = \eta_0 \cdot \mathbb{I}(\max_{i \in G} R_{i, \text{env}} = 0)$ dynamically decays upon discovering any successful rollout, the policy:
+   - Exerts active directional pressure to escape distractor traps during zero-reward exploration.
+   - Instantly collapses curiosity ($\eta_t \to 0$) upon discovering a valid solution mode, locking into exploitation without exploratory jitter.
+3. **Strict Conservation of Total Flow**:
+   Because $w \in \Delta^{L-1}$, Mean Flow Conservation holds identically for $R_{\text{total}} = R_{\text{env}} + R_{\text{curiosity}}$:
+   $$\frac{1}{L}\sum_{t=1}^L \hat{A}_t^{(w)} \equiv \hat{A}_{\text{TB}}(R_{\text{total}})$$
+   guaranteeing that curiosity exploration operates within the strict physical conservation laws of GFlowNets.

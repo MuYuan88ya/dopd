@@ -351,10 +351,14 @@ def compute_c_flowbalance_advantage(
             # Flow-GAE: recursive multi-horizon span discounting along the trajectory
             adv_gae = torch.zeros_like(A_DB)
             running_future = torch.zeros(batch_size, device=device, dtype=dtype)
+            terminal_indices = (raw_lengths.long() - 1).clamp(min=-1)
             seq_dim = A_DB.shape[1]
             for t in reversed(range(seq_dim)):
-                running_future = (1.0 - subtb_lambda) * A_DB[:, t] + subtb_lambda * (running_future if t < seq_dim - 1 else A_TB[:, t])
-                running_future = running_future * response_mask[:, t]
+                is_terminal_token = (t == terminal_indices)
+                future_target = torch.where(is_terminal_token, A_TB[:, t], running_future)
+                running_future = (
+                    (1.0 - subtb_lambda) * A_DB[:, t] + subtb_lambda * future_target
+                ) * response_mask[:, t]
                 adv_gae[:, t] = running_future
             effective_adv = adv_gae
         else:

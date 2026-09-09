@@ -157,6 +157,10 @@ The new theoretical features have been integrated into `verl/verl/trainer/ppo/c_
 - In mixed on-policy and historical replay buffer training, PPO suffers severe importance sampling ratio divergence (37.00% clip rate), collapsing to 2.50% pass rate.
 - FlowBalance and SubTB operate without an importance sampling denominator ($\pi_{\text{buf}}$), maintaining **0.00% clipping saturation** and unlocking a **31.0x pass rate surge (77.50% vs 2.50%)**!
 
+### 4.14 Theorem 17: Active Flow-Curiosity Principle for Sparse-Reward Trap Escape
+- Identifies epistemic confusion at reasoning forks using group empirical flow residual variance $\mathcal{U}_t = \text{Var}_G(\delta_{i, t})$.
+- Applies adaptive curiosity exploration that breaks distractor trap symmetry and dynamically decays to zero upon discovering valid solution modes.
+
 ---
 
 ## 5. Artifacts and Test Suite Status
@@ -166,10 +170,11 @@ The new theoretical features have been integrated into `verl/verl/trainer/ppo/c_
 - `tests/test_c_flowbalance_integration.py`: **5 / 5 PASS**
 - `tests/test_flowbalance_gspo_integration.py`: **6 / 6 PASS**
 - `tests/test_c_flowbalance_step_mode.py`: **3 / 3 PASS**
+- `tests/test_c_flowbalance_variable_lengths.py`: **1 / 1 PASS**
 - `experiments/autonomous_research_20260910/test_edge_cases.py`: **5 / 5 PASS**
 - `experiments/autonomous_research_20260910/test_comprehensive_suite.py`: **3 / 3 PASS**
 
-**Total Test Coverage: 24 / 24 Integration & Unit Tests Passing (100%)**.
+**Total Test Coverage: 25 / 25 Integration & Unit Tests Passing (100%)**.
 
 ### Pre-print Research Manuscript:
 - Complete research paper drafted at: `experiments/autonomous_research_20260910/PAPER_MANUSCRIPT_DRAFT.md`.
