@@ -1,0 +1,32 @@
+{
+  "flow": {
+    "clean_pass_at_1_mean": 1.0,
+    "clean_pass_at_1_std": 0.0,
+    "boundary_crash_rate_mean": 0.0,
+    "boundary_crash_rate_std": 0.0,
+    "final_distance_mean": 0.24733504951000213,
+    "final_distance_std": 0.04628275017650038,
+    "local_time_dissipation_mean": 0.10922413170337678,
+    "local_time_dissipation_std": 0.11566578569346159
+  },
+  "grpo": {
+    "clean_pass_at_1_mean": 0.0,
+    "clean_pass_at_1_std": 0.0,
+    "boundary_crash_rate_mean": 1.0,
+    "boundary_crash_rate_std": 0.0,
+    "final_distance_mean": 30884147232768.0,
+    "final_distance_std": 9808401562914.98,
+    "local_time_dissipation_mean": 0.0,
+    "local_time_dissipation_std": 0.0
+  },
+  "ppo": {
+    "clean_pass_at_1_mean": 0.0,
+    "clean_pass_at_1_std": 0.0,
+    "boundary_crash_rate_mean": 1.0,
+    "boundary_crash_rate_std": 0.0,
+    "final_distance_mean": 5105978830.629517,
+    "final_distance_std": 7256761279.697105,
+    "local_time_dissipation_mean": 0.0,
+    "local_time_dissipation_std": 0.0
+  }
+}
