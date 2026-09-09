@@ -191,6 +191,7 @@ bash recipe/flowbalance/run_math_flowbalance_gspo.sh
 | `algorithm.g_consist_prior`| *(未定义)* | **`0.5`** *(取值区间 $[0, 1]$)* | **贝叶斯先验门控置信度**：当 Prompt 组内样本全平局（如硬题探索全部错误，缺乏组内胜负对）时的兜底置信度，防止自教师信号过早被静音。 |
 | `algorithm.vac_mode`       | *(未定义)* | **`false`** *(可选 `true`)* | **方差自适应置信度 (VAC)**：依组内奖励方差动态调节 $\alpha(x)$。探索全错硬题自动拉高至 $\alpha_{\max}=0.8$ 强力救援；有解题自动衰减至 $\alpha_{\min}=0.2$ 保持纯 RL 探索。 |
 | `algorithm.flow_gae_mode`  | *(未定义)* | **`false`** *(可选 `true`)* | **Flow-GAE 几何多跨度子轨迹平衡**：通过后向递归指数加权 $\mathcal{O}(L)$ 计算多跨度流平衡优势，相比 2-Point SubTB 在大 $\lambda$ 下方差更小、抗干扰能力更强。 |
+| `algorithm.ema_beta`       | *(未定义)* | **`0.1`** *(取值区间 $(0, 1)$)* | **跨 Batch 课程教师 EMA 动量系数 (Theorem 7)**：在有解题上持续积累教师 AUC 信用，跨题平滑传递至全错硬题，避免零奖励陷入探索瘫痪。 |
 | `algorithm.gate_no_context`| *(未定义)* | **`fallback_gspo`** | 当 Prompt 组内无有效特权解答时的策略：<br>• `fallback_gspo` (默认)：使用 GRPO 优势计算 GSPO 损失，充分利用 Rollout 数据；<br>• `drop`：将该样本优势置零。 |
 | `actor.policy_loss.loss_mode` | `flowsd` | **`gspo`** | 启用序列级几何重要性加权策略损失，替换容易方差爆炸的 Token 乘积。 |
 | `actor.loss_agg_mode` | `token-mean` | **`seq-mean-token-mean`** | GSPO 官方推荐的损失聚合模式，在序列间与序列内双重均匀加权。 |

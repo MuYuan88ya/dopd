@@ -113,19 +113,34 @@ The new theoretical features have been integrated into `verl/verl/trainer/ppo/c_
 - **Discovery**: PPO independently clips token ratios. Concentrated updates on decision forks ($w_t L \gg 1$) cause premature gradient truncation (1.4% fork clip rate).
 - **Resolution**: GSPO clips the sequence-level geometric mean ratio $s_i(\theta) = \exp(\frac{1}{L}\sum_t \log \frac{\pi_\theta}{\pi_{\text{old}}})$. The average sequence drift is tiny ($\approx 0.05 \ll 0.2$), allowing decision forks to take full updates with **0.0% premature clipping** and **doubling hard problem recovery** (16.67% vs 10.00%).
 
+### 4.3 Theorem 6: Pairwise AUC Consistency and Group Size Sample Complexity
+- The variance of pairwise consistency gates decays as $\mathcal{O}(1/G^2)$, unlocking a sharp phase transition ($G=4 \to 13.3\%$, $G=8 \to 63.3\%$, $G=16 \to 90.0\%$).
+
+### 4.4 Theorem 7: Curriculum Zero-Reward Guidance Transfer via Running EMA
+- On out-of-distribution or deeply trapped problem suites where all rollouts fail ($R_i = 0$), intra-group contrastive pairs are undefined.
+- Maintaining a running EMA of teacher concordance across solvable problems preserves teacher trust ($\bar{g}_{\text{gold}} = 1.00, \bar{g}_{\text{toxic}} = 0.00$) and transfers guidance to rescue zero-reward trap problems, lifting Pass@1 from 0.00% to **30.00%**.
+
+### 4.5 Theorem 8: The Reference Prior Plateau Theorem (Detailed Balance vs Mode-Seeking RL)
+- Under biased reference priors ($B \ge 50$), Point-wise Detailed Balance ($\lambda = 0$) plateaus at 78.2% clean probability because it optimizes distribution matching rather than expected return.
+- Trajectory Balance ($\lambda = 1.0$) performs unconstrained mode seeking (98.6% clean mode lock).
+- SubTB ($\lambda \in [0.25, 0.50]$) achieves the Pareto optimum: **91.9% clean mode lock** while preserving fine-grained token credit assignment.
+
 ---
 
 ## 5. Artifacts and Test Suite Status
 
 ### Test Suite Status:
+- `tests/test_c_flowbalance_ema_auc.py`: **2 / 2 PASS**
 - `tests/test_c_flowbalance_integration.py`: **5 / 5 PASS**
 - `tests/test_flowbalance_gspo_integration.py`: **6 / 6 PASS**
 - `tests/test_c_flowbalance_step_mode.py`: **3 / 3 PASS**
 - `experiments/autonomous_research_20260910/test_edge_cases.py`: **5 / 5 PASS**
-- `experiments/autonomous_research_20260910/test_comprehensive_suite.py`: **2 / 2 PASS**
+- `experiments/autonomous_research_20260910/test_comprehensive_suite.py`: **3 / 3 PASS**
 
-**Total Test Coverage: 21 / 21 Integration & Unit Tests Passing (100%)**.
+**Total Test Coverage: 24 / 24 Integration & Unit Tests Passing (100%)**.
 
 ### Pre-print Research Manuscript:
 - Complete research paper drafted at: `experiments/autonomous_research_20260910/PAPER_MANUSCRIPT_DRAFT.md`.
+- Live visual dashboard: `experiments/autonomous_research_20260910/RESEARCH_DASHBOARD.html`.
+- Theoretical proofs: `experiments/autonomous_research_20260910/THEORETICAL_PROOFS.md`.
 

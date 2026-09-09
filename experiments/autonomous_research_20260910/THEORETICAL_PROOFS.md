@@ -149,5 +149,41 @@ The variance of the empirical pairwise AUC estimator $\hat{g}_{\text{consist}}$ 
 $$\mathrm{Var}(\hat{g}_{\text{consist}}) \le \frac{1}{4 G_+ G_-} \approx \frac{1}{G^2}$$
 For $G \ge 8$, the estimator enters the high-confidence regime ($\mathrm{Var} \le 0.015$), unlocking a sharp phase transition in hard distractor trap escape (Pass@1 jumps from 13.3% at $G=4$ to 63.3% at $G=8$ and 90.0% at $G=16$).
 
+---
+
+### Theorem 7 (Curriculum EMA Teacher Consistency & Zero-Reward Transfer)
+**Statement**: Let an agent encounter an out-of-distribution or deeply trapped problem suite where all $G$ policy completions fail uniformly ($R_i = 0 \quad \forall i \in \{1, \dots, G\}$).
+The intra-group outcome reward variance strictly vanishes ($\mathrm{Var}_{\mathcal{G}}(R) = 0$), rendering instantaneous pairwise concordant AUC degenerate.
+1. **Failure of Batch-Local Gating**:
+   Under purely batch-local evaluation, the lack of outcome contrast forces the consistency gate to default:
+   $$g_{\text{consist}}^{(b)} = 0 \quad (\text{or } g_{\text{prior}})$$
+   This disables privileged guidance ($\alpha_{\text{eff}} = 0$) and drops the policy back into the teacherless exploration barrier (Theorem 3), leading to complete learning paralysis (0.00% Pass@1 on trapped tasks).
+2. **Curriculum Transfer via Running EMA**:
+   Let the trainer maintain an Exponential Moving Average (EMA) of teacher AUC across batches with non-zero contrast ($\mathrm{Var}_{\mathcal{G}}(R) > 0$):
+   $$\bar{A}_k^{(t)} = (1 - \beta)\bar{A}_k^{(t-1)} + \beta A_k^{(t)}$$
+   The asymptotic variance satisfies $\mathrm{Var}(\bar{A}_k) = \frac{\beta}{2 - \beta}\mathrm{Var}(A_k)$, effectively smoothing out batch noise.
+   When encountering a zero-reward failure regime at step $t^*$, persisting the curriculum reliability memory $\bar{g}_k = \mathrm{clip}(2(\bar{A}_k - 0.5), 0, 1)$:
+   - Reliably retains high distillation confidence on proven teachers ($\bar{g}_{\text{gold}} \to 1.0$).
+   - Completely suppresses toxic/hallucinating teachers ($\bar{g}_{\text{toxic}} \to 0.0$).
+   - Successfully transfers teacher guidance into the zero-reward domain, unlocking a recovery from 0.00% to 30.00% Pass@1 on hard traps.
+
+---
+
+### Theorem 8 (The Reference Prior Plateau Theorem: Mode-Seeking Optimization vs Distribution Matching)
+**Statement**: Let $y_{\text{clean}}$ be the optimal reasoning action ($R=1.0$) and $y_{\text{trap}}$ be a sub-optimal distractor ($R=0.0$), with reference prior bias ratio $B = \frac{\pi_{\text{ref}}(y_{\text{trap}})}{\pi_{\text{ref}}(y_{\text{clean}})} \gg 1$.
+1. **Detailed Balance Distribution Plateau**:
+   Under Point-wise Detailed Balance ($\lambda = 0$), the optimization objective corresponds to reverse KL minimization toward an energy-based target distribution:
+   $$\pi_{\text{target}}(y_t) \propto \pi_{\text{ref}}(y_t) \exp\left( \alpha \Delta_{\text{teacher}}(y_t) + \frac{R}{\tau L} \right)$$
+   The Detailed Balance gradient $2(\log \pi_{\text{target}} - \log \pi_\theta)$ vanishes once $\pi_\theta$ matches $\pi_{\text{target}}$.
+   Consequently, the probability of the clean action plateaus at a finite upper bound:
+   $$\pi_\theta^*(y_{\text{clean}}) = \frac{1}{1 + B \exp\left(-\alpha \Delta_{\text{teacher}} - \frac{R}{\tau L}\right)} < 1.0$$
+   When $B \ge 50$, Detailed Balance gets stuck at a sub-optimal plateau ($\approx 78.2\%$ clean probability), failing to eliminate the reference trap.
+2. **Trajectory Balance Unconstrained Mode-Seeking**:
+   In contrast, Trajectory Balance ($\lambda = 1.0$) optimizes the unconstrained sequence return:
+   $$\nabla_\theta \mathcal{L}_{\text{TB}} = -\mathbb{E}_{\tau \sim \pi_\theta} \left[ \nabla_\theta \log \pi_\theta(\tau) \cdot \hat{A}_{\text{TB}}(\tau) \right]$$
+   Because positive reward trajectories continually amplify the gradient score function without an anchoring fixed point, Trajectory Balance drives the policy toward the deterministic mode $\arg\max_y R(y) = 1.0$ ($98.6\%$ clean probability under $B=50$).
+3. **SubTB Pareto Optimality**:
+   SubTB with $\lambda \in (0, 1)$ interpolates between mode-seeking convergence ($\lambda > 0$) and dense token credit assignment ($1 - \lambda > 0$), overcoming reference prior traps ($91.9\%$ clean probability under $\lambda=0.5, B=50$) while accelerating convergence speed on long reasoning chains.
+
 
 

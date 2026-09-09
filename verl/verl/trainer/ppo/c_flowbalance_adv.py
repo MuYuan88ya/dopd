@@ -30,22 +30,31 @@ def compute_pairwise_auc_group(
     G_seq: torch.Tensor,
     scores: torch.Tensor,
     g_consist_prior: float = 0.5,
+    ema_auc_tracker: Optional[dict[str, float]] = None,
+    ema_beta: float = 0.1,
 ) -> tuple[float, float]:
-    """Compute Pairwise AUC and g_consist for a group of trajectory completions.
+    """Computes pairwise concordance AUC of teacher guidance against outcome rewards.
 
-    Checks whether the teacher's sequence-level preference G_seq correlates with the
-    ground-truth verifier outcome scores.
+    When ema_auc_tracker is provided:
+        - Updates the running teacher AUC on groups with non-zero score variance.
+        - Uses the historical running EMA on degenerate groups (e.g. all rollouts 0), transferring curriculum trust.
 
     Args:
         G_seq: [G] sequence-level teacher gain
         scores: [G] sequence-level outcome rewards
         g_consist_prior: float in [0.0, 1.0], default prior confidence when all rollouts in the group tie
+        ema_auc_tracker: optional dict storing {"running_auc": float} across groups/batches
+        ema_beta: float, EMA momentum parameter
 
     Returns:
         auc: float in [0.0, 1.0]
         g_consist: float in [0.0, 1.0]
     """
     if len(scores) < 2:
+        if ema_auc_tracker is not None and "running_auc" in ema_auc_tracker:
+            auc_val = ema_auc_tracker["running_auc"]
+            g_consist_val = float(np.clip(2.0 * (auc_val - 0.5), 0.0, 1.0))
+            return auc_val, g_consist_val
         return 0.5, float(g_consist_prior)
 
     # Pairs (i, j) where scores[i] > scores[j]
@@ -53,6 +62,10 @@ def compute_pairwise_auc_group(
     pos_mask = s_diff > 1e-6
     if not pos_mask.any():
         # All completions in group received identical scores -> no contrastive truth
+        if ema_auc_tracker is not None and "running_auc" in ema_auc_tracker:
+            auc_val = ema_auc_tracker["running_auc"]
+            g_consist_val = float(np.clip(2.0 * (auc_val - 0.5), 0.0, 1.0))
+            return auc_val, g_consist_val
         return 0.5, float(g_consist_prior)
 
     g_diff = G_seq.unsqueeze(1) - G_seq.unsqueeze(0)
@@ -61,6 +74,11 @@ def compute_pairwise_auc_group(
     total_pairs = pos_mask.float().sum()
     auc = (concordant + 0.5 * ties) / total_pairs.clamp(min=1.0)
     auc_val = float(auc.item())
+
+    # Update running EMA
+    if ema_auc_tracker is not None:
+        cur_ema = ema_auc_tracker.get("running_auc", auc_val)
+        ema_auc_tracker["running_auc"] = (1.0 - ema_beta) * cur_ema + ema_beta * auc_val
 
     # Map [0.5, 1.0] -> [0.0, 1.0]. Toxic/hallucinating teacher (AUC <= 0.5) is muted to 0.0.
     g_consist_val = float(np.clip(2.0 * (auc_val - 0.5), 0.0, 1.0))
@@ -134,6 +152,8 @@ def compute_c_flowbalance_advantage(
     vac_alpha_max: float = 0.8,
     flow_gae_mode: bool = False,
     step_delimiter_mask: Optional[torch.Tensor] = None,
+    ema_auc_tracker: Optional[dict[str, float]] = None,
+    ema_beta: float = 0.1,
     epsilon: float = 1e-6,
     config: Optional[Any] = None,
 ) -> tuple[torch.Tensor, torch.Tensor, dict[str, float]]:
@@ -261,7 +281,11 @@ def compute_c_flowbalance_advantage(
 
         # Compute Pairwise AUC and g_consist for this prompt group
         auc_val, g_consist_val = compute_pairwise_auc_group(
-            group_G_T, group_scores, g_consist_prior=g_consist_prior
+            group_G_T,
+            group_scores,
+            g_consist_prior=g_consist_prior,
+            ema_auc_tracker=ema_auc_tracker,
+            ema_beta=ema_beta,
         )
         all_aucs.append(auc_val)
         if auc_val < 0.5 - 1e-6:
@@ -371,5 +395,7 @@ def compute_c_flowbalance_advantage(
         "c_flowsd/subtb_lambda": float(subtb_lambda),
         "c_flowsd/advantage_mean": float(final_token_adv[response_mask.bool()].mean().item()) if response_mask.any() else 0.0,
     }
+    if ema_auc_tracker is not None and "running_auc" in ema_auc_tracker:
+        metrics["c_flowsd/running_ema_auc"] = float(ema_auc_tracker["running_auc"])
 
     return final_token_adv, final_token_adv, metrics
