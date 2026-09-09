@@ -1,0 +1,38 @@
+{
+  "flow": {
+    "clean_pass_greedy_mean": 1.0,
+    "clean_pass_greedy_std": 0.0,
+    "clean_pass_sampled_mean": 0.32839999999999997,
+    "clean_pass_sampled_std": 0.027896953238660295,
+    "instanton_charge_greedy_mean": 1.0,
+    "instanton_charge_greedy_std": 0.0,
+    "instanton_charge_sampled_mean": 0.32839999999999997,
+    "instanton_charge_sampled_std": 0.027896953238660295,
+    "yang_mills_curvature_defect_mean": 0.0,
+    "yang_mills_curvature_defect_std": 0.0
+  },
+  "grpo": {
+    "clean_pass_greedy_mean": 0.0,
+    "clean_pass_greedy_std": 0.0,
+    "clean_pass_sampled_mean": 0.0,
+    "clean_pass_sampled_std": 0.0,
+    "instanton_charge_greedy_mean": 0.0,
+    "instanton_charge_greedy_std": 0.0,
+    "instanton_charge_sampled_mean": 0.0,
+    "instanton_charge_sampled_std": 0.0,
+    "yang_mills_curvature_defect_mean": 1.0,
+    "yang_mills_curvature_defect_std": 0.0
+  },
+  "ppo": {
+    "clean_pass_greedy_mean": 0.0,
+    "clean_pass_greedy_std": 0.0,
+    "clean_pass_sampled_mean": 0.0,
+    "clean_pass_sampled_std": 0.0,
+    "instanton_charge_greedy_mean": 0.0,
+    "instanton_charge_greedy_std": 0.0,
+    "instanton_charge_sampled_mean": 0.0,
+    "instanton_charge_sampled_std": 0.0,
+    "yang_mills_curvature_defect_mean": 1.0,
+    "yang_mills_curvature_defect_std": 0.0
+  }
+}
