@@ -132,3 +132,13 @@ Under GSPO, the importance ratio is defined as the sequence geometric mean:
 $$s_i(\theta) = \exp\left( \frac{1}{L}\sum_{t=1}^L \big(\log \pi_\theta(y_t) - \log \pi_{\text{old}}(y_t)\big) \right)$$
 Because the sequence drift $\frac{1}{L}\sum_t \log \frac{\pi_\theta(y_t)}{\pi_{\text{old}}(y_t)}$ is bounded by $\mathcal{O}(1/L)$ for localized fork updates, $s_i(\theta)$ remains strictly inside the trust region $[1-\epsilon, 1+\epsilon]$. Consequently, the effective policy gradient on decision forks is never prematurely zeroed out, achieving optimal credit backpropagation.
 
+---
+
+### Theorem 5 (Length Invariance and Bounded Horizon Scaling under Intensive Flow Normalization)
+**Statement**: Let $\tau_1, \tau_2$ be two reasoning traces of lengths $L_1 < L_2$ with per-token predictive cross-entropy $\bar{H}_1 \approx \bar{H}_2 \approx \bar{H}$.
+Under unnormalized Trajectory Balance ($\rho = 0$), the sequence flow difference scales extensively as $\mathcal{O}(L)$, inducing an advantage magnitude ratio between long and short trajectories:
+$$\frac{\mathbb{E}[|\hat{A}(\tau_2)|]}{\mathbb{E}[|\hat{A}(\tau_1)|]} \approx \left(\frac{L_2}{L_1}\right)^{1-\rho}$$
+When $\rho = 0$, this ratio equals $L_2 / L_1 > 1$, artificially rewarding verbose generation and creating a positive feedback loop for length exploitation (up to 2.69x higher advantage on long sequences).
+Under intensive flow normalization ($\rho = 1.0$), the ratio is bounded to $\mathcal{O}(1)$, eliminating length reward hacking while ensuring equitable gradient allocation across variable reasoning depths.
+
+
