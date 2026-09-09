@@ -1,0 +1,68 @@
+{
+  "flowbalance": {
+    "clean_pass": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "sampled_pass": {
+      "mean": 0.3401418119841525,
+      "std": 0.0011139267785642546
+    },
+    "padic_defect": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "interference_rate": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "purity_fidelity": {
+      "mean": 1.0,
+      "std": 0.0
+    }
+  },
+  "grpo": {
+    "clean_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "sampled_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "padic_defect": {
+      "mean": 0.41816435560838716,
+      "std": 0.0018229251216143024
+    },
+    "interference_rate": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "purity_fidelity": {
+      "mean": 0.16524589432391007,
+      "std": 0.003294681396120626
+    }
+  },
+  "ppo": {
+    "clean_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "sampled_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "padic_defect": {
+      "mean": 0.31362651565601085,
+      "std": 0.002848786407775688
+    },
+    "interference_rate": {
+      "mean": 0.984,
+      "std": 0.01019803902718558
+    },
+    "purity_fidelity": {
+      "mean": 0.37274696868797835,
+      "std": 0.00569757281555142
+    }
+  }
+}
