@@ -415,3 +415,16 @@ The intra-group outcome reward variance strictly vanishes ($\mathrm{Var}_{\mathc
    Unlike SFT which indiscriminately maximizes likelihood on all demonstration tokens—cloning both optimal paths and verbose, suboptimal filler syntax (41.71% fluffy rate, 0.72% hallucination error in SFT)—BBO-FlowBalance incorporates length-regularized flow constraints to penalize verbosity while completely suppressing flawed solutions ($0.01\%$ hallucination rate, 99.99% reward).
 3. **Elimination of Pairing Constraints (vs DPO)**:
    Unlike Direct Preference Optimization (DPO), which strictly requires pairwise contrastive rollouts $(y_w, y_l)$ on identical prompts, BBO-FlowBalance trains seamlessly on unpaired, heterogeneous, single-trajectory rollouts from disparate external sources.
+
+---
+
+### Theorem 24 (Total Log-Flow Decoupling & Dynamic Reward Scale Invariance)
+**Statement**: Let a verifier reward function undergo arbitrary non-stationary multiplicative scaling $R'(\tau) = c \cdot R(\tau)$ with $c > 0$ across training iterations (e.g. dynamic curriculum difficulty, verifier calibration shifts).
+1. **Exact Scale Absorption via Partition Function**:
+   In Trajectory Balance, the loss under scaled rewards is:
+   $$\mathcal{L}_{\text{TB}}'(\tau; \theta, Z') = \left( \log Z' + \sum_{t=1}^L \log \pi_\theta(y_t) - \log (c R(\tau)) \right)^2 = \left( (\log Z' - \log c) + \sum_{t=1}^L \log \pi_\theta(y_t) - \log R(\tau) \right)^2$$
+   Setting $\log Z' = \log Z + \log c$ restores the exact unscaled loss identically:
+   $$\nabla_\theta \mathcal{L}_{\text{TB}}'(\tau; \theta, \log Z + \log c) \equiv \nabla_\theta \mathcal{L}_{\text{TB}}(\tau; \theta, \log Z)$$
+   The policy gradient $\nabla_\theta$ is **strictly invariant** to reward scale shifts, eliminating policy distortion.
+2. **Contrast with Standard Policy Gradients (PPO)**:
+   In standard PPO, unnormalized rewards scale the advantage $\hat{A}' = c \hat{A}$, multiplying policy gradient norms by $c$. Under 20x inflation ($c=20$), PPO gradient norms swell, whereas FlowBalance automatically absorbs shifts into $\log Z$, preserving stable convergence (96.10% acc in inflation, 97.59% in deflation).

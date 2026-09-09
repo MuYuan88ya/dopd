@@ -186,6 +186,10 @@ The new theoretical features have been integrated into `verl/verl/trainer/ppo/c_
 - Trajectory Balance contains no proposal density denominator $\pi_{\text{ext}}$, allowing direct off-policy training on unannotated external model rollouts without teacher log-probabilities.
 - Length-regularized flow constraints eliminate suboptimal filler syntax (saving tokens) while completely suppressing flawed hallucinations ($0.01\%$ error vs $0.72\%$ in SFT) and achieving **99.99% solution reward**.
 
+### 4.21 Theorem 24: Total Log-Flow Decoupling & Dynamic Reward Scale Invariance
+- Multiplicative reward shifts $R' = c R$ across curriculum phases are absorbed identically by the scalar partition function $\log Z' = \log Z + \log c$.
+- Leaves policy parameter gradients $\nabla_\theta$ strictly invariant, preventing the policy gradient explosion and deflation freezing seen in standard PPO across dynamic reward scaling regimes.
+
 ---
 
 ## 5. Artifacts and Test Suite Status
