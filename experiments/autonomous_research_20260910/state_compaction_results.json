@@ -1,0 +1,26 @@
+{
+  "grpo": {
+    "pass_rate_mean": 0.0,
+    "pass_rate_std": 0.0,
+    "p1_acc_mean": 0.0034999999999999996,
+    "p1_acc_std": 0.002,
+    "p2_acc_mean": 0.0055,
+    "p2_acc_std": 0.00291547594742265
+  },
+  "ppo_critic": {
+    "pass_rate_mean": 0.0,
+    "pass_rate_std": 0.0,
+    "p1_acc_mean": 0.0035000000000000005,
+    "p1_acc_std": 0.0029999999999999996,
+    "p2_acc_mean": 0.017499999999999998,
+    "p2_acc_std": 0.015247950681976907
+  },
+  "flow_balance": {
+    "pass_rate_mean": 0.9235,
+    "pass_rate_std": 0.009823441352194257,
+    "p1_acc_mean": 0.9620000000000001,
+    "p1_acc_std": 0.00913783344124853,
+    "p2_acc_mean": 0.9615,
+    "p2_acc_std": 0.0020000000000000074
+  }
+}
