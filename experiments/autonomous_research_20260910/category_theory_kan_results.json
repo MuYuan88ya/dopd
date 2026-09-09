@@ -1,0 +1,32 @@
+{
+  "flow": {
+    "compositional_pass_greedy_mean": 1.0,
+    "compositional_pass_greedy_std": 0.0,
+    "compositional_pass_sampled_mean": 0.24159999999999998,
+    "compositional_pass_sampled_std": 0.025687350972803728,
+    "kan_extension_defect_mean": 0.0,
+    "kan_extension_defect_std": 0.0,
+    "functorial_adjunction_fidelity_mean": 1.0,
+    "functorial_adjunction_fidelity_std": 0.0
+  },
+  "grpo": {
+    "compositional_pass_greedy_mean": 0.0,
+    "compositional_pass_greedy_std": 0.0,
+    "compositional_pass_sampled_mean": 0.0,
+    "compositional_pass_sampled_std": 0.0,
+    "kan_extension_defect_mean": 0.5764686049598216,
+    "kan_extension_defect_std": 0.47965531660778404,
+    "functorial_adjunction_fidelity_mean": 0.4640691139720123,
+    "functorial_adjunction_fidelity_std": 0.43112804305802566
+  },
+  "ppo": {
+    "compositional_pass_greedy_mean": 0.0,
+    "compositional_pass_greedy_std": 0.0,
+    "compositional_pass_sampled_mean": 0.0052,
+    "compositional_pass_sampled_std": 0.0104,
+    "kan_extension_defect_mean": 1.069119502712662,
+    "kan_extension_defect_std": 0.865934236529248,
+    "functorial_adjunction_fidelity_mean": 0.3797361953960111,
+    "functorial_adjunction_fidelity_std": 0.46554008711442724
+  }
+}
