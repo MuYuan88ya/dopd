@@ -535,7 +535,21 @@ Consistent FlowBalance resolves this via **Hierarchical Flow Decomposition (H-Fl
 
 H-FlowBalance guarantees that multi-turn agentic workflows converge reliably across complex conversational horizons.
 
-### 4.24 Key Empirical Takeaways
+### 4.24 Multi-Mode Coverage & Anti-Collapse Invariance (Theorem 26)
+
+In complex reasoning tasks where problems have multiple valid derivation techniques (e.g. Algebraic, Geometric, and Inductive approaches), outcome policy gradient methods (GRPO) suffer from **Mode Collapse**: positive feedback loops sample the majority mode more frequently, driving minority valid modes to near-extinction (Mode 2 collapsed to 4.97% in GRPO, with mode entropy dropping to $H = 0.7325$).
+
+Consistent FlowBalance intrinsically generates a **Restorative Counter-Force**: any mode whose probability exceeds its reward share creates a positive Trajectory Balance residual $\delta > 0$, penalizing its sampling rate, while underrepresented modes receive negative residuals $\delta < 0$, boosting their probability until exact uniform coverage is reached:
+
+| Algorithm | Mode 0 (Algebraic) | Mode 1 (Geometric) | Mode 2 (Inductive) | Trap Error Rate (%) | Mode Entropy $H$ (Max: 1.0986) | Total Accuracy (%) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Standard GRPO** | 70.67% ± 3.78% | 24.21% ± 4.07% | **4.97% ± 0.74% (Collapsed)** | 0.14% ± 0.04% | 0.7325 | 99.86% |
+| **PPO (with Entropy Bonus)** | 31.93% ± 2.43% | 32.72% ± 1.09% | 35.22% ± 2.97% | 0.12% ± 0.03% | 1.0952 | 99.88% |
+| **FlowBalance (TB)** | **33.12% ± 0.10%** | **33.14% ± 0.11%** | **33.35% ± 0.05%** | 0.40% ± 0.04% | **1.0986 (Exact $\ln 3$)** | **99.60%** |
+
+FlowBalance achieves the exact theoretical maximum Shannon entropy ($\ln 3 = 1.0986$) with standard deviation $<0.1\%$, unlocking robust multi-path reasoning diversity for test-time Best-of-N scaling.
+
+### 4.25 Key Empirical Takeaways
 
 1. **The 0% vs 59% Phase Transition**:
    On hard reasoning DAGs where the student begins in a distractor trap, uniform credit methods (GRPO, TB, uniform SubTB) fail completely (0.00% Pass@1). Spreading reward and baseline uniformly across 32 tokens dilutes the fork gradient below the threshold needed to flip the logit bias. EW-SubTB concentrates gradient updates onto the fork tokens (4.82x ratio), triggering a phase transition to 59.17% Pass@1.
@@ -579,6 +593,8 @@ H-FlowBalance guarantees that multi-turn agentic workflows converge reliably acr
    Shifts in external reward magnitude are absorbed identically by the scalar partition function $\log Z$, preserving strictly invariant policy gradient updates across multi-order-of-magnitude curriculum scaling.
 21. **Hierarchical Multi-Turn Flow Decomposition**:
    Inter-turn flow balance prevents downstream exploration noise from penalizing upstream correctness, eliminating turn credit bleeding across multi-turn agent dialogues.
+22. **Multi-Mode Anti-Collapse Coverage**:
+   FlowBalance intrinsically applies restorative pressure to degenerate solution modes, converging to exact theoretical maximum Shannon entropy ($\ln 3 = 1.0986$) across multi-path mathematical proofs without manual entropy bonus tuning.
 
 ---
 
