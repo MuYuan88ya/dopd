@@ -316,6 +316,21 @@ def compute_advantage(
             if hasattr(algo_cfg, "get")
             else getattr(algo_cfg, "subtb_lambda", 1.0)
         )
+        token_weight_mode = (
+            algo_cfg.get("token_weight_mode", "uniform")
+            if hasattr(algo_cfg, "get")
+            else getattr(algo_cfg, "token_weight_mode", "uniform")
+        )
+        token_weight_gamma = (
+            algo_cfg.get("token_weight_gamma", 1.0)
+            if hasattr(algo_cfg, "get")
+            else getattr(algo_cfg, "token_weight_gamma", 1.0)
+        )
+        g_consist_prior = (
+            algo_cfg.get("g_consist_prior", 0.5)
+            if hasattr(algo_cfg, "get")
+            else getattr(algo_cfg, "g_consist_prior", 0.5)
+        )
 
         advantages, returns, metrics = compute_c_flowbalance_advantage(
             token_level_rewards=rewards,
@@ -332,6 +347,9 @@ def compute_advantage(
             gate_no_context=gate_no_context,
             norm_adv_by_std_in_grpo=norm_adv_by_std_in_grpo,
             subtb_lambda=subtb_lambda,
+            token_weight_mode=token_weight_mode,
+            token_weight_gamma=token_weight_gamma,
+            g_consist_prior=g_consist_prior,
             config=config,
         )
         data.batch["advantages"] = advantages

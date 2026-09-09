@@ -29,25 +29,31 @@ def _uids_to_list(uids: Any) -> list[Any]:
 def compute_pairwise_auc_group(
     G_seq: torch.Tensor,
     scores: torch.Tensor,
+    g_consist_prior: float = 0.5,
 ) -> tuple[float, float]:
     """Compute Pairwise AUC and g_consist for a group of trajectory completions.
 
     Checks whether the teacher's sequence-level preference G_seq correlates with the
     ground-truth verifier outcome scores.
 
+    Args:
+        G_seq: [G] sequence-level teacher gain
+        scores: [G] sequence-level outcome rewards
+        g_consist_prior: float in [0.0, 1.0], default prior confidence when all rollouts in the group tie
+
     Returns:
         auc: float in [0.0, 1.0]
-        g_consist: float in [0.0, 1.0] (maps AUC in [0.5, 1.0] -> [0.0, 1.0], clamped to 0.0 if AUC <= 0.5)
+        g_consist: float in [0.0, 1.0]
     """
     if len(scores) < 2:
-        return 0.5, 0.5
+        return 0.5, float(g_consist_prior)
 
     # Pairs (i, j) where scores[i] > scores[j]
     s_diff = scores.unsqueeze(1) - scores.unsqueeze(0)
     pos_mask = s_diff > 1e-6
     if not pos_mask.any():
         # All completions in group received identical scores -> no contrastive truth
-        return 0.5, 0.5
+        return 0.5, float(g_consist_prior)
 
     g_diff = G_seq.unsqueeze(1) - G_seq.unsqueeze(0)
     concordant = (g_diff[pos_mask] > 0).float().sum()
@@ -78,6 +84,9 @@ def compute_c_flowbalance_advantage(
     gate_no_context: str = "fallback_gspo",
     norm_adv_by_std_in_grpo: bool = True,
     subtb_lambda: float = 1.0,
+    token_weight_mode: str = "uniform",
+    token_weight_gamma: float = 1.0,
+    g_consist_prior: float = 0.5,
     epsilon: float = 1e-6,
     config: Optional[Any] = None,
 ) -> tuple[torch.Tensor, torch.Tensor, dict[str, float]]:
@@ -203,9 +212,11 @@ def compute_c_flowbalance_advantage(
         group_G_T = G_T_seq[valid_indices]
 
         # Compute Pairwise AUC and g_consist for this prompt group
-        auc_val, g_consist_val = compute_pairwise_auc_group(group_G_T, group_scores)
+        auc_val, g_consist_val = compute_pairwise_auc_group(
+            group_G_T, group_scores, g_consist_prior=g_consist_prior
+        )
         all_aucs.append(auc_val)
-        if auc_val <= 0.5:
+        if auc_val < 0.5 - 1e-6:
             muted_toxic_teachers += 1
 
         g_consist_tensor[valid_indices] = g_consist_val
@@ -222,10 +233,22 @@ def compute_c_flowbalance_advantage(
 
     # 6. Construct C-FlowBalance Target and Detailed Balance Advantage
     effective_alpha_token = (alpha * g_consist_tensor).unsqueeze(-1)
+
+    if token_weight_mode == "surprise" and abs(token_weight_gamma) > 1e-6:
+        # Surprise-weighted SubTB: w_t proportional to (|delta_t| + eps)^gamma
+        # Concentrates macro flow updates on decision-critical tokens
+        surprise = (delta.abs() + 0.05).pow(token_weight_gamma) * response_mask
+        w = surprise / surprise.sum(dim=-1, keepdim=True).clamp(min=1e-8)
+        w_factor = w * lengths.unsqueeze(-1)
+        macro_flow_term = w_factor * (R_term_seq + baseline).unsqueeze(-1)
+    else:
+        # Standard uniform SubTB (default)
+        macro_flow_term = (R_term_seq + baseline).unsqueeze(-1)
+
     target_token = (
         ref_log_prob
         + effective_alpha_token * delta
-        + (R_term_seq + baseline).unsqueeze(-1)
+        + macro_flow_term
     ) * response_mask
 
     A_DB = 2.0 * (target_token - old_log_prob) * response_mask
