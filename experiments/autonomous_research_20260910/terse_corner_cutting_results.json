@@ -1,0 +1,23 @@
+{
+  "grpo_len": {
+    "algo": "grpo_len",
+    "overall_acc": 0.49993070693017216,
+    "simple_acc": 0.9972859248518944,
+    "complex_acc": 0.0025754890084499493,
+    "complex_avg_length": 2.046358802152099
+  },
+  "uniform_flowbalance": {
+    "algo": "uniform_flowbalance",
+    "overall_acc": 0.49993070693017216,
+    "simple_acc": 0.9972859248518944,
+    "complex_acc": 0.0025754890084499493,
+    "complex_avg_length": 2.046358802152099
+  },
+  "olp_flowbalance": {
+    "algo": "olp_flowbalance",
+    "overall_acc": 0.9973677396774292,
+    "simple_acc": 0.9972859248518944,
+    "complex_acc": 0.997449554502964,
+    "complex_avg_length": 19.954091981053352
+  }
+}

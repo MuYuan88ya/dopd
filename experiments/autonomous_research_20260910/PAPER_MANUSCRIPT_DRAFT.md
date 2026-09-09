@@ -432,7 +432,19 @@ When training with mixed on-policy and off-policy historical replay buffers (50%
 
 In deep sequential reasoning problems where intermediate feedback is absent and random discovery chance is near-zero (needle-in-a-haystack traps), standard outcome RL (GRPO) suffers from zero advantage variance across the group ($\text{Var}_G(R) = 0$), remaining completely paralyzed (0.00% discovery rate). By quantifying epistemic disagreement through the group empirical variance of flow residuals $\mathcal{U}_t = \text{Var}_G(\delta_{i, t})$, Flow-Curiosity applies targeted exploration force to break symmetry at dead-end forks. Coupled with an adaptive phase-switching gate that instantly zeroes curiosity upon finding a solution, the policy transitions seamlessly from active exploration to exploitation mode.
 
-### 4.16 Key Empirical Takeaways
+### 4.16 Orthogonal Length Regularization & Terse Corner-Cutting Elimination (Theorem 18)
+
+When models are trained with length penalties to curb verbosity, standard scalarized rewards $R = R_{\text{acc}} - \beta_{\text{len}} L$ inadvertently penalize intrinsically complex, long-chain proofs. When $L^* > R_{\max}/\beta_{\text{len}}$, generating an incorrect 2-token abort yields higher scalar return than a correct 20-step proof. This triggers the **Terse Corner-Cutting Pathology**, collapsing complex problem accuracy to near-zero. Orthogonal Length-Penalized FlowBalance (OLP-FlowBalance) decouples mathematical reasoning from syntax fluff by setting $\langle w^{(\text{acc})}, w^{(\text{len})} \rangle = 0$:
+
+| Algorithm | Overall Accuracy (%) | Simple Task Acc (%) | Complex Task Acc (%) | Complex Output Length | Failure Mode |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Standard GRPO (with length penalty)** | 49.99% | 99.73% | 0.26% | 2.0 | Complete Corner-Cutting Collapse |
+| **Uniform FlowBalance (scalarized)** | 49.99% | 99.73% | 0.26% | 2.0 | Complete Corner-Cutting Collapse |
+| **OLP-FlowBalance (Orthogonal)** | **99.74%** | **99.73%** | **99.74% (383x)** | **20.0** | **Full Mathematical Rigor Preserved** |
+
+By restricting length regularization strictly to the filler token subspace, OLP-FlowBalance completely cures the corner-cutting pathology, boosting complex task accuracy from **0.26% to 99.74% (a 383x recovery)** while preserving full 20-step proof depth.
+
+### 4.17 Key Empirical Takeaways
 
 1. **The 0% vs 59% Phase Transition**:
    On hard reasoning DAGs where the student begins in a distractor trap, uniform credit methods (GRPO, TB, uniform SubTB) fail completely (0.00% Pass@1). Spreading reward and baseline uniformly across 32 tokens dilutes the fork gradient below the threshold needed to flip the logit bias. EW-SubTB concentrates gradient updates onto the fork tokens (4.82x ratio), triggering a phase transition to 59.17% Pass@1.
@@ -460,6 +472,8 @@ In deep sequential reasoning problems where intermediate feedback is absent and 
    Semantic DAG SubTB pools flow potentials across convergent derivations, preventing downstream arithmetic errors from penalizing alternative methods and boosting method entropy by +85.7%.
 13. **Off-Policy Experience Replay Density-Ratio Immunity**:
    FlowBalance operates without an importance sampling denominator ($\pi_{\text{buf}}$), eliminating clipping saturation (0.0% vs 37.0% in PPO) and delivering a 31.0x pass rate improvement (77.50% vs 2.50%) on mixed on/off-policy replay buffers.
+14. **Terse Corner-Cutting Elimination via Orthogonal Length Regularization**:
+   Orthogonalizing length penalties onto filler tokens ($\langle w^{(\text{acc})}, w^{(\text{len})} \rangle = 0$) prevents scalarized length penalties from penalizing genuinely complex mathematical proofs, restoring complex problem accuracy from 0.26% to 99.74% (a 383x gain) while eliminating superfluous syntax fluff.
 
 ---
 

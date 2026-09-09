@@ -1,0 +1,29 @@
+{
+  "grpo_len": {
+    "algo": "grpo_len",
+    "overall_acc": 0.9971394588549932,
+    "short_acc": 0.9973029692967733,
+    "long_acc": 0.9969759484132131,
+    "short_rambling": 0.002208125137258321,
+    "long_rambling": 0.0018694692213709156,
+    "avg_length": 16.032620754869033
+  },
+  "uniform_flowbalance_len": {
+    "algo": "uniform_flowbalance_len",
+    "overall_acc": 0.9971394588549932,
+    "short_acc": 0.9973029692967733,
+    "long_acc": 0.9969759484132131,
+    "short_rambling": 0.002208125137258321,
+    "long_rambling": 0.0018694692213709156,
+    "avg_length": 16.032620754869033
+  },
+  "olp_flowbalance": {
+    "algo": "olp_flowbalance",
+    "overall_acc": 0.9970492025216421,
+    "short_acc": 0.9971411327521006,
+    "long_acc": 0.9969572722911835,
+    "short_rambling": 0.003313249248700837,
+    "long_rambling": 0.0034075782944758735,
+    "avg_length": 16.053766620345414
+  }
+}
