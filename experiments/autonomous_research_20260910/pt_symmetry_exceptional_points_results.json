@@ -1,0 +1,68 @@
+{
+  "flowbalance": {
+    "clean_pass": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "sampled_pass": {
+      "mean": 0.1988632413036179,
+      "std": 0.000657660935493175
+    },
+    "im_lambda_defect": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "ep_orthogonality": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "pt_fidelity": {
+      "mean": 1.0,
+      "std": 0.0
+    }
+  },
+  "grpo": {
+    "clean_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "sampled_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "im_lambda_defect": {
+      "mean": 0.9708473152444945,
+      "std": 0.004527603234493573
+    },
+    "ep_orthogonality": {
+      "mean": 0.27990772733686536,
+      "std": 0.0029287071208406895
+    },
+    "pt_fidelity": {
+      "mean": 0.06131751755092303,
+      "std": 0.005039466389906609
+    }
+  },
+  "ppo": {
+    "clean_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "sampled_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "im_lambda_defect": {
+      "mean": 0.8931795300249348,
+      "std": 0.004165394975734025
+    },
+    "ep_orthogonality": {
+      "mean": 0.30789850007055186,
+      "std": 0.003221577832924738
+    },
+    "pt_fidelity": {
+      "mean": 0.11409047555579103,
+      "std": 0.004459937180055349
+    }
+  }
+}
