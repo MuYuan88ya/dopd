@@ -1,0 +1,26 @@
+{
+  "grpo": {
+    "pass_rate_mean": 0.5890000000000001,
+    "pass_rate_std": 0.4809277492513819,
+    "step_acc_mean": 0.7052013993263244,
+    "step_acc_std": 0.35828814551726534,
+    "grad_var_mean": 0.10935101082691778,
+    "grad_var_std": 0.09008442521960426
+  },
+  "additive_gae": {
+    "pass_rate_mean": 0.378,
+    "pass_rate_std": 0.4631722141925183,
+    "step_acc_mean": 0.5085138708353043,
+    "step_acc_std": 0.3952062228002795,
+    "grad_var_mean": 0.15489369074858797,
+    "grad_var_std": 0.018220615018074142
+  },
+  "multi_subtb": {
+    "pass_rate_mean": 0.9440000000000002,
+    "pass_rate_std": 0.007842193570679041,
+    "step_acc_mean": 0.9902641534805298,
+    "step_acc_std": 4.017658321090981e-05,
+    "grad_var_mean": 0.12845347174228383,
+    "grad_var_std": 0.0007202616156357452
+  }
+}
