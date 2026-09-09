@@ -1,0 +1,38 @@
+{
+  "flow": {
+    "global_soundness_greedy_mean": 1.0,
+    "global_soundness_greedy_std": 0.0,
+    "global_soundness_sampled_mean": 0.272,
+    "global_soundness_sampled_std": 0.011999999999999995,
+    "cech_greedy_defect_mean": 0.0,
+    "cech_greedy_defect_std": 0.0,
+    "cech_cohomology_defect_mean": 2.9716,
+    "cech_cohomology_defect_std": 0.0823397838228884,
+    "sheaf_gluing_fidelity_mean": 0.2719999969005585,
+    "sheaf_gluing_fidelity_std": 0.01199999451637416
+  },
+  "grpo": {
+    "global_soundness_greedy_mean": 0.0,
+    "global_soundness_greedy_std": 0.0,
+    "global_soundness_sampled_mean": 0.0,
+    "global_soundness_sampled_std": 0.0,
+    "cech_greedy_defect_mean": 3.0,
+    "cech_greedy_defect_std": 0.0,
+    "cech_cohomology_defect_mean": 3.0116,
+    "cech_cohomology_defect_std": 0.0036660605559645978,
+    "sheaf_gluing_fidelity_mean": 0.0,
+    "sheaf_gluing_fidelity_std": 0.0
+  },
+  "ppo": {
+    "global_soundness_greedy_mean": 0.0,
+    "global_soundness_greedy_std": 0.0,
+    "global_soundness_sampled_mean": 0.0,
+    "global_soundness_sampled_std": 0.0,
+    "cech_greedy_defect_mean": 3.0,
+    "cech_greedy_defect_std": 0.0,
+    "cech_cohomology_defect_mean": 3.7916000000000003,
+    "cech_cohomology_defect_std": 0.04312586231021942,
+    "sheaf_gluing_fidelity_mean": 0.0,
+    "sheaf_gluing_fidelity_std": 0.0
+  }
+}
