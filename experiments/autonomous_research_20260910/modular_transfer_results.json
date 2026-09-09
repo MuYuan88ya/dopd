@@ -1,0 +1,32 @@
+{
+  "grpo": {
+    "task1_acc_mean": 0.8,
+    "task1_acc_std": 0.4,
+    "task2_acc_mean": 0.8,
+    "task2_acc_std": 0.4,
+    "task3_zeroshot_mean": 0.8,
+    "task3_zeroshot_std": 0.4,
+    "lemma1_fidelity_mean": 0.8699999999999999,
+    "lemma1_fidelity_std": 0.26
+  },
+  "multi_task_ppo": {
+    "task1_acc_mean": 0.8,
+    "task1_acc_std": 0.4,
+    "task2_acc_mean": 0.8,
+    "task2_acc_std": 0.4,
+    "task3_zeroshot_mean": 0.8,
+    "task3_zeroshot_std": 0.4,
+    "lemma1_fidelity_mean": 0.8699999999999999,
+    "lemma1_fidelity_std": 0.26
+  },
+  "modular_flow": {
+    "task1_acc_mean": 1.0,
+    "task1_acc_std": 0.0,
+    "task2_acc_mean": 1.0,
+    "task2_acc_std": 0.0,
+    "task3_zeroshot_mean": 1.0,
+    "task3_zeroshot_std": 0.0,
+    "lemma1_fidelity_mean": 1.0,
+    "lemma1_fidelity_std": 0.0
+  }
+}
