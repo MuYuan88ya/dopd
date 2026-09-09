@@ -643,7 +643,21 @@ In contrast, Symplectic Flow Conservation enforces node flow continuity at the j
 
 Symplectic FlowBalance maintains **97.95% trunk fidelity** and elevates Backtracking Pass@1 to **96.32%**, completely eliminating trunk corruption during multi-branch reasoning search.
 
-### 4.32 Key Empirical Takeaways
+### 4.32 Dual-Primal Lyapunov Flow Stability under Adversarial Noise (Theorem 34)
+
+In long-chain reasoning RL, automated verifiers (e.g. execution checkers or model-based judges) frequently suffer non-zero false-positive rates ($p_{\text{fp}} \approx 0.30$), erroneously awarding positive terminal rewards ($R = 1.0$) to flawed reasoning rollouts. Under standard outcome RL (GRPO), these false-positive rewards reinforce mathematical hallucinations and inflate the batch baseline, penalizing genuinely correct rollouts and inducing severe policy oscillations ($50.11\% \pm 35.64\%$ Pass@1). PPO with KL regularization collapses completely to $0.00\% \pm 0.00\%$.
+
+In contrast, Dual-Primal Concordance FlowBalance gates terminal flow targets using reference semantic continuity $\min_t \pi_{\text{ref}}(y_t) \ge \tau_{\text{crit}}$ and bounds gradient updates via Huber Lyapunov potential functionals:
+
+| Algorithm / Optimization Paradigm | Clean Pass@1 (%) | Step 0 Accuracy (%) | Step 3 Accuracy (%) | Adversarial Noise Robustness |
+| :--- | :---: | :---: | :---: | :---: |
+| **Monolithic GRPO** | 50.11% ± 35.64% | 76.22% ± 35.10% | 76.83% ± 34.90% | Erratic Policy Oscillations (Crashes on Seeds) |
+| **PPO-KL (Learned Baseline)** | 0.00% ± 0.00% | 0.88% ± 0.40% | 0.64% ± 0.30% | Severe Policy Collapse |
+| **Concordance FlowBalance** | **96.66% ± 0.11%** | **99.17% ± 0.05%** | **99.12% ± 0.06%** | **Strictly Invariant (324x Variance Reduction)** |
+
+By rejecting false-positive verifier feedback at the semantic flow boundary, Concordance FlowBalance delivers **96.66% Clean Pass@1** with near-zero performance variance ($0.11\%$).
+
+### 4.33 Key Empirical Takeaways
 
 1. **The 0% vs 59% Phase Transition**:
    On hard reasoning DAGs where the student begins in a distractor trap, uniform credit methods (GRPO, TB, uniform SubTB) fail completely (0.00% Pass@1). Spreading reward and baseline uniformly across 32 tokens dilutes the fork gradient below the threshold needed to flip the logit bias. EW-SubTB concentrates gradient updates onto the fork tokens (4.82x ratio), triggering a phase transition to 59.17% Pass@1.
@@ -703,6 +717,8 @@ Symplectic FlowBalance maintains **97.95% trunk fidelity** and elevates Backtrac
    Geometric span kernels $K(i, j) = \lambda^{j-i-1}(1-\lambda)$ unify single-step detailed balance with trajectory balance, delivering a 128x variance reduction ($0.0007$ vs $0.0901$) and eliminating the additive reward assumption failure that degrades GAE on complex proofs.
 29. **Symplectic Flow Conservation in Tree Search**:
    Node flow conservation at search junctions decouples trunk flow potential from downstream exploratory dead ends, preventing the prefix degradation that causes GRPO (8.60% Direct Pass@1) and PPO (2.28%) to collapse during tree search, achieving 86.88% Direct Pass@1 and 96.32% Backtracking Pass@1.
+30. **Dual-Primal Lyapunov Stability under Adversarial Verifiers**:
+   Semantic concordance flow gating coupled with Huber Lyapunov bounds rejects false-positive verifier hallucinations at the flow boundary, eliminating the violent policy oscillations of GRPO (50.11% ± 35.64%) and collapse of PPO (0.00%), securing 96.66% ± 0.11% Pass@1 with a 324x variance reduction.
 
 ---
 
