@@ -1,0 +1,27 @@
+{
+  "theorem": 71,
+  "title": "Tropical Geometry, Min-Plus Semirings & Amoeba Limit Asymptotics in Temperature Annealing",
+  "n_facets": 6,
+  "n_steps": 120,
+  "temperatures_tested": [
+    1.0,
+    0.5,
+    0.2,
+    0.05,
+    0.01
+  ],
+  "metrics": {
+    "grpo": {
+      "final_tropical_spine_defect": 2.175728269637581,
+      "final_freezing_rate_pct": 100.0,
+      "final_pass_rate_pct": 0.6709164431159059,
+      "annealing_freeze_trap_rate_pct": 99.3290835568841
+    },
+    "cfb": {
+      "final_tropical_spine_defect": 0.0,
+      "final_freezing_rate_pct": 0.0,
+      "final_pass_rate_pct": 100.0,
+      "annealing_freeze_trap_rate_pct": 0.0
+    }
+  }
+}
