@@ -1,0 +1,50 @@
+{
+  "metadata": {
+    "theorem": "Theorem 62: Random Matrix Theory, Dyson Brownian Motion & Marchenko-Pastur Spectral Rigidity",
+    "date": "2026-09-10",
+    "n_seeds": 5,
+    "n_problems": 40,
+    "n_rollouts": 16,
+    "D": 32,
+    "L": 64,
+    "gamma": 0.5,
+    "lambda_minus": 0.08578643762690492,
+    "lambda_plus": 2.914213562373095
+  },
+  "flowbalance": {
+    "greedy_pass_mean": 1.0,
+    "greedy_pass_std": 0.0,
+    "sampled_pass_mean": 1.0,
+    "sampled_pass_std": 0.0,
+    "mp_defect_mean": 0.0022167968750000005,
+    "mp_defect_std": 0.00019186408891004396,
+    "condition_number_mean": 26.29721435722248,
+    "condition_number_std": 0.21181602295954158,
+    "effective_rank_mean": 24.76759567425532,
+    "effective_rank_std": 0.00921145652002467
+  },
+  "grpo": {
+    "greedy_pass_mean": 0.0,
+    "greedy_pass_std": 0.0,
+    "sampled_pass_mean": 0.0,
+    "sampled_pass_std": 0.0,
+    "mp_defect_mean": 1.0,
+    "mp_defect_std": 0.0,
+    "condition_number_mean": 95893.41933310093,
+    "condition_number_std": 320.1370517667876,
+    "effective_rank_mean": 1.03082835440685,
+    "effective_rank_std": 3.832442329148386e-05
+  },
+  "ppo": {
+    "greedy_pass_mean": 0.0,
+    "greedy_pass_std": 0.0,
+    "sampled_pass_mean": 0.0,
+    "sampled_pass_std": 0.0,
+    "mp_defect_mean": 1.0,
+    "mp_defect_std": 0.0,
+    "condition_number_mean": 10409.707980392477,
+    "condition_number_std": 70.23675347952266,
+    "effective_rank_mean": 3.1600584111910752,
+    "effective_rank_std": 0.0016606730540765229
+  }
+}
