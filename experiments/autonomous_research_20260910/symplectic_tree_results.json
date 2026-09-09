@@ -1,0 +1,38 @@
+{
+  "grpo": {
+    "direct_pass_mean": 0.086,
+    "direct_pass_std": 0.05376988004450075,
+    "backtrack_pass_mean": 0.292,
+    "backtrack_pass_std": 0.1755129624842564,
+    "trunk_fidelity_mean": 0.7055891871452331,
+    "trunk_fidelity_std": 0.0947721766621856,
+    "fork_fidelity_mean": 0.16467992551624774,
+    "fork_fidelity_std": 0.08386450042294809,
+    "trunk_grad_var_mean": 0.09944952917842476,
+    "trunk_grad_var_std": 0.008579259688585623
+  },
+  "ppo_critic": {
+    "direct_pass_mean": 0.022799999999999997,
+    "direct_pass_std": 0.014232357499725757,
+    "backtrack_pass_mean": 0.0948,
+    "backtrack_pass_std": 0.06413236312502447,
+    "trunk_fidelity_mean": 0.4999715149402618,
+    "trunk_fidelity_std": 0.09847103989226386,
+    "fork_fidelity_mean": 0.08497564867138863,
+    "fork_fidelity_std": 0.03752531384520478,
+    "trunk_grad_var_mean": 0.0019082875699439137,
+    "trunk_grad_var_std": 0.00010884623192908377
+  },
+  "symplectic_flow": {
+    "direct_pass_mean": 0.8688,
+    "direct_pass_std": 0.011702991070662246,
+    "backtrack_pass_mean": 0.9632,
+    "backtrack_pass_std": 0.009260669522232187,
+    "trunk_fidelity_mean": 0.9794853687286377,
+    "trunk_fidelity_std": 0.002689987891468724,
+    "fork_fidelity_mean": 0.9052834153175354,
+    "fork_fidelity_std": 0.007564573100593931,
+    "trunk_grad_var_mean": 0.002713630023606828,
+    "trunk_grad_var_std": 0.00019917583972705311
+  }
+}

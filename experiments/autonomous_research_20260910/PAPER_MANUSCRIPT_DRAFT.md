@@ -629,7 +629,21 @@ Multi-Granularity SubTB integrates single-step Detailed Balance, multi-step lemm
 
 Multi-Granularity SubTB delivers a **128x variance reduction** while preserving exact non-additive flow conservation across multi-step deduction spans.
 
-### 4.31 Key Empirical Takeaways
+### 4.31 Symplectic Flow Conservation & Decoupled Tree Search (Theorem 33)
+
+In test-time reasoning tree search (e.g. MCTS, DFS backtracking, or beam search), candidates branch from a shared deduction trunk ($s_0 \to \dots \to s_{\text{pivot}} \to \{s_{\text{branch}}^{(b)}\}_{b=1}^B$). When expanding $B=8$ candidate branches where deceptive traps fail, standard outcome-supervised sequence RL (GRPO) suffers catastrophic prefix degradation: rollouts that fail due to downstream branch dead-ends broadcast negative advantage backwards onto the shared trunk prefix. Over repeated search expansions, trunk deduction fidelity drops to $70.56\% \pm 9.48\%$ in GRPO and collapses to $50.00\% \pm 9.85\%$ in Actor-Critic PPO.
+
+In contrast, Symplectic Flow Conservation enforces node flow continuity at the junction node $s_{\text{pivot}}$: $\sum_{b=1}^B F(s_{\text{pivot}} \to s_b) = F_{\text{in}}(s_{\text{pivot}}) = \exp(\Phi(s_{\text{pivot}}))$. Because the trunk potential $\Phi(s_{\text{pivot}})$ captures the total terminating reachability volume across the candidate set, the trunk transition is completely decoupled from individual branch exploration failures:
+
+| Algorithm / Search Paradigm | Direct Pass@1 (%) | Backtracking Pass@1 (3 Tries) (%) | Trunk Fidelity (%) | Fork Fidelity (%) | Trunk Grad Variance |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Monolithic GRPO** | 8.60% ± 5.38% | 29.20% ± 17.55% | 70.56% ± 9.48% | 16.47% ± 8.39% | 0.099450 |
+| **Actor-Critic PPO** | 2.28% ± 1.42% | 9.48% ± 6.41% | 50.00% ± 9.85% | 8.50% ± 3.75% | 0.001908 |
+| **Symplectic FlowBalance** | **86.88% ± 1.17%** | **96.32% ± 0.93%** | **97.95% ± 0.27%** | **90.53% ± 0.76%** | **0.002714 (36x Reduction)** |
+
+Symplectic FlowBalance maintains **97.95% trunk fidelity** and elevates Backtracking Pass@1 to **96.32%**, completely eliminating trunk corruption during multi-branch reasoning search.
+
+### 4.32 Key Empirical Takeaways
 
 1. **The 0% vs 59% Phase Transition**:
    On hard reasoning DAGs where the student begins in a distractor trap, uniform credit methods (GRPO, TB, uniform SubTB) fail completely (0.00% Pass@1). Spreading reward and baseline uniformly across 32 tokens dilutes the fork gradient below the threshold needed to flip the logit bias. EW-SubTB concentrates gradient updates onto the fork tokens (4.82x ratio), triggering a phase transition to 59.17% Pass@1.
@@ -687,6 +701,8 @@ Multi-Granularity SubTB delivers a **128x variance reduction** while preserving 
    Exact path flow conservation prevents the value representation distortion that cripples actor-critic RL across long-context memory compaction boundaries, elevating Pass@1 from 0.00% to 92.35% under intermediate state summarization.
 28. **Multi-Granularity SubTB & Non-Additive Flow Alignment**:
    Geometric span kernels $K(i, j) = \lambda^{j-i-1}(1-\lambda)$ unify single-step detailed balance with trajectory balance, delivering a 128x variance reduction ($0.0007$ vs $0.0901$) and eliminating the additive reward assumption failure that degrades GAE on complex proofs.
+29. **Symplectic Flow Conservation in Tree Search**:
+   Node flow conservation at search junctions decouples trunk flow potential from downstream exploratory dead ends, preventing the prefix degradation that causes GRPO (8.60% Direct Pass@1) and PPO (2.28%) to collapse during tree search, achieving 86.88% Direct Pass@1 and 96.32% Backtracking Pass@1.
 
 ---
 

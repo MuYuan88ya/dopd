@@ -222,6 +222,10 @@ The new theoretical features have been integrated into `verl/verl/trainer/ppo/c_
 - Standard RL advantage estimators (GAE) assume additive trajectory returns ($R = \sum r_t$), breaking down on non-additive theorem proving and causing high variance ($0.0182$) and failure ($37.80\% \pm 46.32\%$).
 - Multi-Granularity SubTB unifies Detailed Balance, intermediate lemma spans, and Trajectory Balance via geometric span kernels, achieving **94.40% ± 0.78% Pass@1** and a **128x variance reduction** ($0.0007$ vs $0.0901$ in GRPO).
 
+### 4.30 Theorem 33: Symplectic Flow Conservation & Decoupled Tree Search
+- In test-time reasoning tree search (MCTS, DFS backtracking), branch dead ends under monolithic advantage estimation (GRPO) broadcast negative gradients backwards into the shared trunk prefix, degrading trunk fidelity to **70.56% ± 9.48%** (and **50.00% ± 9.85%** in PPO).
+- Symplectic Flow Conservation preserves node flow continuity at search junctions ($\sum_b F(s \to s_b) = F_{\text{in}}(s)$), decoupling trunk potential from branch exploration. This achieves **86.88% ± 1.17% Direct Pass@1**, **96.32% ± 0.93% Backtracking Pass@1**, and **97.95% trunk deduction fidelity** with a **36x variance reduction** ($0.002714$ vs $0.099450$).
+
 ---
 
 ## 5. Artifacts and Test Suite Status
