@@ -1,0 +1,32 @@
+{
+  "flow": {
+    "clean_pass_greedy_mean": 1.0,
+    "clean_pass_greedy_std": 0.0,
+    "clean_pass_sampled_mean": 0.3264,
+    "clean_pass_sampled_std": 0.016218507946170635,
+    "fiedler_spectral_gap_mean": 0.3429538164545698,
+    "fiedler_spectral_gap_std": 0.0,
+    "cheeger_conductance_mean": 0.2069425928456213,
+    "cheeger_conductance_std": 0.0
+  },
+  "grpo": {
+    "clean_pass_greedy_mean": 0.0,
+    "clean_pass_greedy_std": 0.0,
+    "clean_pass_sampled_mean": 0.0,
+    "clean_pass_sampled_std": 0.0,
+    "fiedler_spectral_gap_mean": 0.0030612871283296384,
+    "fiedler_spectral_gap_std": 0.0001289851461145843,
+    "cheeger_conductance_mean": 0.0010258521693730003,
+    "cheeger_conductance_std": 4.306493931303618e-05
+  },
+  "ppo": {
+    "clean_pass_greedy_mean": 0.0,
+    "clean_pass_greedy_std": 0.0,
+    "clean_pass_sampled_mean": 0.0,
+    "clean_pass_sampled_std": 0.0,
+    "fiedler_spectral_gap_mean": 0.02499347760099449,
+    "fiedler_spectral_gap_std": 0.002402873401853016,
+    "cheeger_conductance_mean": 0.008678642927297473,
+    "cheeger_conductance_std": 0.0008771487071069505
+  }
+}
