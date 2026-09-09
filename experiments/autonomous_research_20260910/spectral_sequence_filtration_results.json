@@ -1,0 +1,20 @@
+{
+  "theorem": 74,
+  "title": "Spectral Sequences, Leray-Serre Filtrations & Obstruction Cohomology in Multi-Scale Hierarchical Proof Verification",
+  "n_dim": 16,
+  "n_steps": 120,
+  "metrics": {
+    "grpo": {
+      "final_spectral_defect": 2.1900623773886947,
+      "final_phantom_proof_rate_pct": 100.0,
+      "final_pass_rate_pct": 0.0,
+      "higher_obstruction_trap_rate_pct": 100.0
+    },
+    "cfb": {
+      "final_spectral_defect": 0.06653905013045229,
+      "final_phantom_proof_rate_pct": 0.0,
+      "final_pass_rate_pct": 100.0,
+      "higher_obstruction_trap_rate_pct": 0.0
+    }
+  }
+}
