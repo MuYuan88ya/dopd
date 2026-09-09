@@ -1,0 +1,68 @@
+{
+  "flowbalance": {
+    "clean_pass": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "sampled_pass": {
+      "mean": 0.3499699345192832,
+      "std": 0.0029406430637089168
+    },
+    "mtc_defect": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "top_fidelity": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "verlinde_error": {
+      "mean": 2.220446049250313e-16,
+      "std": 0.0
+    }
+  },
+  "grpo": {
+    "clean_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "sampled_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "mtc_defect": {
+      "mean": 55.08757619142135,
+      "std": 46.66240742427756
+    },
+    "top_fidelity": {
+      "mean": 0.23568937469612647,
+      "std": 0.0190811347059612
+    },
+    "verlinde_error": {
+      "mean": 54.26817406276041,
+      "std": 46.626252665763005
+    }
+  },
+  "ppo": {
+    "clean_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "sampled_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "mtc_defect": {
+      "mean": 42.962625589635245,
+      "std": 41.36380107794499
+    },
+    "top_fidelity": {
+      "mean": 0.3404026942619211,
+      "std": 0.019693344860507396
+    },
+    "verlinde_error": {
+      "mean": 42.30770720967619,
+      "std": 41.39019310124265
+    }
+  }
+}
