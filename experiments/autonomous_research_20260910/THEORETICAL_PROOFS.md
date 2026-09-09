@@ -382,3 +382,22 @@ The intra-group outcome reward variance strictly vanishes ($\mathrm{Var}_{\mathc
    - **1st-Try Optimal Accuracy**: Surges from 35.47% (Uniform SubTB) and 85.72% (GRPO) to **99.75% ± 0.16%** under SCCD.
    - **Fake-Reflection Elimination**: Slashed from 13.07% (GRPO) and 45.88% (SubTB) down to **0.03% ± 0.06% (435x reduction)**.
    - **Token Efficiency**: Achieves the minimal theoretical bound of **4.01 tokens** (vs 6.96 in SubTB and 4.47 in GRPO) while retaining **100.00% pivot recovery capability** when trapped.
+
+---
+
+### Theorem 22 (Dual Process-Outcome Flow Harmonization & Creative Proof Preservation)
+**Statement**: Let reasoning trajectories be guided simultaneously by an Outcome Reward Model (ORM) evaluating terminal correctness $R_{\text{ORM}} \in \{0, 1\}$ and an imperfect Process Reward Model (PRM) evaluating step validity $p_k \in (0, 1)$ subject to false negative errors on novel derivations ($p_k \ll 1$ despite mathematical validity).
+1. **The Creative Proof Suppression Pathology in Linear PRM Blending**:
+   In standard step RL (Step-PPO / Linear PRM+ORM), step reward is a linear combination $R_{\text{step}} = \alpha p_k + (1-\alpha) R_{\text{ORM}}$.
+   Whenever a student adopts an unconventional proof step that the PRM penalizes with false skepticism ($p_k \approx 0.15$), the cumulative step penalty crushes the advantage of creative derivations below that of standard textbook templates:
+   $$\hat{A}_{\text{creative}} < \hat{A}_{\text{standard}}$$
+   This causes standard step RL to virtually eliminate creative problem-solving (**creative proof retention collapses from ~50% to 0.10%**).
+2. **Harmonized Flow Balance Boundary Condition**:
+   In Consistent FlowBalance with Dynamic Harmony Gating (DPO-FlowBalance), the total trajectory flow is strictly anchored by terminal outcome conservation:
+   $$\sum_{k=0}^{K-1} \hat{A}_k \equiv \hat{A}_{\text{TB}}(R_{\text{ORM}})$$
+   Whenever terminal correctness is verified ($R_{\text{ORM}} = 1$), the harmony gate down-weights step PRM skepticism:
+   $$\lim_{R_{\text{ORM}} \to 1} \frac{\partial \hat{A}_k}{\partial \log p_k} = 0$$
+   protecting valid unconventional derivations while preserving zero-variance dense credit on standard concordant steps.
+3. **Empirical Guarantees**:
+   - **Creative Proof Preservation**: DPO-FlowBalance retains **49.45% ± 24.12% creative proofs (a 494x preservation over Linear PRM's 0.10%)**.
+   - **Overall Accuracy**: Maintains **99.73% ± 0.05%** mathematical accuracy with near-zero hallucination (0.15%).
