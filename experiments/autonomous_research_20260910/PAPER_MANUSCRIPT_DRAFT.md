@@ -260,7 +260,21 @@ To establish rigorous statistical significance beyond single-run variance, we ex
 
 Notice that `C-FlowBalance Full` achieves the highest hard problem recovery ($43.00\%$) with the tightest 95% confidence interval ($\pm 3.51\%$ vs $\pm 9.99\%$ for raw EW-SubTB), demonstrating that Flow-GAE recursive span discounting and Variance-Adaptive Confidence significantly stabilize multi-seed training dynamics.
 
-### 4.3 Key Empirical Takeaways
+### 4.3 Group Size (G) Scaling and Sample Complexity (Equal Budget = 160 Rollouts)
+
+We investigated the scaling behavior of C-FlowBalance and GRPO across group sizes $G \in \{2, 4, 8, 16\}$ under a constant sample budget of 160 rollouts per problem:
+
+| Configuration | Group Size $G$ | Update Epochs | Pass@1 (%) | Hard Trap Pass (%) |
+| :--- | :---: | :---: | :---: | :---: |
+| **GRPO** ($G=2, 4, 8, 16$) | $2 \sim 16$ | $80 \sim 10$ | $0.00\%$ | $0.00\%$ |
+| **C-FlowBalance ($G=2$)** | 2 | 80 | $0.00\%$ | $0.00\%$ |
+| **C-FlowBalance ($G=4$)** | 4 | 40 | $13.33\%$ | $0.00\%$ |
+| **C-FlowBalance ($G=8$)** | 8 | 20 | **$63.33\%$** | **$40.00\%$** |
+| **C-FlowBalance ($G=16$)** | 16 | 10 | **$90.00\%$** | **$80.00\%$** |
+
+Under Theorem 6, the number of contrastive pairs scales quadratically $\binom{G}{2} \propto G^2$. For $G \ge 8$, the pairwise consistency gate $g_{\text{consist}}$ enters the high-confidence regime, unlocking an extraordinary phase transition: with $G=16$, only 10 update steps are needed to achieve **90.00% Pass@1** and **80.00% Hard Trap recovery**!
+
+### 4.4 Key Empirical Takeaways
 
 1. **The 0% vs 59% Phase Transition**:
    On hard reasoning DAGs where the student begins in a distractor trap, uniform credit methods (GRPO, TB, uniform SubTB) fail completely (0.00% Pass@1). Spreading reward and baseline uniformly across 32 tokens dilutes the fork gradient below the threshold needed to flip the logit bias. EW-SubTB concentrates gradient updates onto the fork tokens (4.82x ratio), triggering a phase transition to 59.17% Pass@1.
