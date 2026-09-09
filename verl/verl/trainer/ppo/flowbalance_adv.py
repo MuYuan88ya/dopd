@@ -168,7 +168,7 @@ def compute_flowbalance_advantage(
         # 7. Construct FlowBalance Target & Trajectory Balance Advantage
         flowsd_target = log_R_tilde + baseline
         tb_seq_adv = 2.0 * (flowsd_target - seq_logp_old)
-        tb_token_adv = (tb_seq_adv / length_norm).unsqueeze(-1) * response_mask
+        tb_token_adv = tb_seq_adv.unsqueeze(-1) * response_mask
 
         # 7.1 SubTB / Detailed Balance Extension (when subtb_lambda < 1.0)
         if subtb_lambda < 1.0 - 1e-6:
@@ -180,7 +180,7 @@ def compute_flowbalance_advantage(
                 + (eta_R * grpo_adv + baseline).unsqueeze(-1)
             ) * response_mask
 
-            db_token_adv = (2.0 * (target_token - old_log_prob) / length_norm.unsqueeze(-1)) * response_mask
+            db_token_adv = 2.0 * (target_token - old_log_prob) * response_mask
             # SubTB interpolation: lambda=1.0 -> pure TB; lambda=0.0 -> pure DB
             effective_tb_adv = (1.0 - subtb_lambda) * db_token_adv + subtb_lambda * tb_token_adv
         else:

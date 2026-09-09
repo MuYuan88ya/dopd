@@ -106,6 +106,7 @@ class AdvantageEstimator(str, Enum):
     RLOO_VECTORIZED = "rloo_vectorized"
     GRPO_VECTORIZED = "grpo_vectorized"
     FLOW_BALANCE = "flow_balance"
+    C_FLOW_BALANCE = "c_flow_balance"
 
 
 ADV_ESTIMATOR_REGISTRY: dict[str, Any] = {}
@@ -1954,8 +1955,9 @@ def compute_policy_loss_bypass_mode(
     return pg_loss, pg_metrics
 
 
-# Auto-register FlowBalance advantage estimator
+# Auto-register FlowBalance & C-FlowBalance advantage estimators
 try:
     from verl.trainer.ppo import flowbalance_adv  # noqa: F401
+    from verl.trainer.ppo import c_flowbalance_adv  # noqa: F401
 except ImportError:
     pass

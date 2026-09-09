@@ -22,51 +22,95 @@
 
 ## 一、核心算法与架构原理
 
-在传统的长序列数学强化学习中（如 GRPO），Token 级重要性采样比率容易累积高方差，且仅依据二值奖励（0/1）更新时，当候选探索全错时无法提供有效的向正确分布靠近的梯度。
+在传统的长序列数学强化学习中（如 GRPO），Token 级重要性采样比率容易累积高方差；且仅依据最终二值奖励（0/1）更新时，当组内候选探索全错时无法提供有效朝向正确分布的微观引导。
 
-本项目提出的方案将 **FlowBalance (Trajectory Balance 优势)** 与 **GSPO (序列级几何重要性加权)** 深度结合：
+本项目深度融合 **FlowBalance (Trajectory Balance / SubTB 优势)** 与 **GSPO (序列级几何重要性加权策略损失)**，并针对原生 FlowSD 的缺陷进行了重大理论重构，提供两个优势估计器：
+* **`flow_balance`**：经典 Trajectory Balance 优势估计器（支持 SubTB 连续流插值，已修复序列长度重归一化陷阱）。
+* **`c_flow_balance`（新升级）**：**Consistent Sub-Trajectory Balance** 估计器，引入 Pairwise AUC 真实性一致性门控（$g_{\text{consist}} \in [0, 1]$）、单形有界置信度（$\alpha \in [0, 1]$）与细粒度 Token 信用分配，杜绝伪正向梯度与幻觉自教师干扰。
+
+### 1. 架构总览与数据流
 
 ```
-                    ┌───────────────────────────────┐
-                    │      Prompt x & Rollouts G    │
-                    └───────────────┬───────────────┘
-                                    │
-                  Has privileged demonstration y* ?
-                                  /   \
-                             Yes /     \ No (Fallback)
-                                v       v
-              ┌─────────────────────┐   ┌─────────────────────┐
-              │ TB Advantage:       │   │ GRPO Advantage:     │
-              │ Â_TB = 2(target-logp│   │ Â_GRPO = (R-μ)/σ    │
-              └──────────┬──────────┘   └──────────┬──────────┘
-                         │                         │
-                         └────────────┬────────────┘
-                                      │
-                                      v
-                    ┌───────────────────────────────┐
-                    │      GSPO Policy Loss         │
-                    │   s_i(θ) = exp(1/|y| Σ Δlogp) │
-                    │   Dual-clipped objective      │
-                    └───────────────────────────────┘
+                    ┌──────────────────────────────────────┐
+                    │        Prompt x & Rollouts G         │
+                    └──────────────────┬───────────────────┘
+                                       │
+                     Has privileged demonstration y* ?
+                                     /   \
+                                Yes /     \ No (Fallback)
+                                   v       v
+         ┌───────────────────────────────┐   ┌─────────────────────────┐
+         │ FlowBalance / C-FlowBalance   │   │ GRPO Advantage:         │
+         │ • g_consist Pairwise AUC Gate │   │ Â_GRPO = (R - μ) / σ    │
+         │ • SubTB Credit Assignment     │   │ (Pure GSPO Fallback)    │
+         │ • Scale-Invariant Â ~ O(1)    │   └────────────┬────────────┘
+         └──────────────┬────────────────┘                │
+                        │                                 │
+                        └────────────────┬────────────────┘
+                                         │
+                                         v
+                        ┌─────────────────────────────────┐
+                        │        GSPO Policy Loss         │
+                        │    s_i(θ) = exp(1/|y| Σ Δlogp)  │
+                        │    Dual-clipped objective       │
+                        └─────────────────────────────────┘
 ```
 
-1. **上游优势估计（FlowBalance & SubTB Advantage Estimator）**：
-   * **特权自教师分支（Privileged Group）**：当组内包含参考解答或特权教师演示 $y^*$ 时，基于 GFlowNet 流平衡理论构建等价优势。
-     本系统原生支持 **Sub-Trajectory Balance（SubTB）连续流插值**：
+---
+
+### 2. 估计器深度剖析：`c_flow_balance` vs `flow_balance`
+
+#### (1) `c_flow_balance`（推荐）：Consistent Sub-Trajectory Balance
+原生 FlowSD 使用启发式加权（$\beta_q, \eta_R$）与符号乘积 $\delta_t \cdot \text{sign}(A)$，当组内解答全错（$A < 0$）且教师生成存在负增益（$\delta_t < 0$）时，负负得正（$(-2) \times (-1) = +2$）会导致模型对错误步骤产生**错误的正向奖励**。
+
+针对此问题，`c_flow_balance` 实现了严格的数学重构：
+1. **Pairwise AUC 真实性一致性门控（$g_{\text{consist}} \in [0, 1]$）**：
+   在每个 Prompt 的 Rollout 组内，计算教师序列偏好 $G_T$ 与真实判题结果 $R$ 的序对一致性：
+   $$\text{AUC} = \frac{\sum_{i, j: R_i > R_j} \left[\mathbb{I}(G_{T, i} > G_{T, j}) + 0.5 \cdot \mathbb{I}(G_{T, i} = G_{T, j})\right]}{\sum_{i, j: R_i > R_j} 1}$$
+   $$g_{\text{consist}} = \text{clip}(2 \cdot (\text{AUC} - 0.5), 0.0, 1.0)$$
+   * 当自教师质量高、与真实胜负高度一致（$\text{AUC} \to 1.0$）时，$g_{\text{consist}} \to 1.0$ 全力注入微观引导；
+   * 当自教师发生幻觉、给出与真实答案相悖的错误偏好（$\text{AUC} \le 0.5$）时，$g_{\text{consist}} = 0.0$，**安全静音（Safety Trip）**，绝不翻转符号误导策略。
+2. **单形有界置信度参数化（Simplex Parameterization）**：
+   将无界的超参数重构为单形坐标 $\alpha \in [0, 1]$ 与温度 $\tau > 0$：
+   $$\text{target}_t = \log \pi_{\text{ref}}(y_t) + (\alpha \cdot g_{\text{consist}}) \cdot \delta_t + \left( \frac{R}{\tau \cdot L^\rho} + b_{\text{group}} \right)$$
+3. **SubTB 连续流插值与 Token 细粒度信用分配**：
+   * **Detailed Balance（局部流平衡，$\lambda=0.0$）**：
+     $$\hat{A}_{\text{DB}, t} = 2 \cdot (\text{target}_t - \log \pi_{\text{old}}(y_t))$$
+   * **Trajectory Balance（全局轨迹平衡，$\lambda=1.0$）**：
+     $$\hat{A}_{\text{TB}} = \frac{1}{L} \sum_{t=1}^L \hat{A}_{\text{DB}, t}$$
+   * **SubTB 凸组合（$\lambda \in [0, 1]$）**：
      $$\hat{A}_{\text{SubTB}, t} = (1 - \lambda) \cdot \hat{A}_{\text{DB}, t} + \lambda \cdot \hat{A}_{\text{TB}}$$
-     * **$\lambda = 1.0$（默认值，纯 Trajectory Balance）**：全序列共享标量优势，与原版 FlowBalance 严格一致：
-       $$\hat{A}_{\text{TB}} = 2 \cdot (\text{flowsd\_target} - \text{seq\_logp}_{\text{old}}) / L^\rho$$
-     * **$\lambda = 0.0$（纯 Detailed Balance，单步局部流平衡）**：将目标能量展开至各个 Token，赋予各 Token 独立的局部信用：
-       $$\hat{A}_{\text{DB}, t} = 2 \cdot (\text{target}_t - \log \pi_{\text{old}}(y_t)) / L^\rho$$
-     * **$0.0 < \lambda < 1.0$（SubTB 混合流平衡，如 $\lambda=0.5$）**：兼顾宏观路径连贯性与局部步骤归因能力。
-     * **【核心数学定理：均值守恒】**：对任意 $\lambda \in [0, 1]$，序列内 Token 优势的均值严格守恒且恒等于原版 TB 标量优势：
-       $$\frac{1}{L} \sum_{t=1}^L \hat{A}_{\text{SubTB}, t} \equiv \hat{A}_{\text{TB}}$$
-   * **无特权回退分支（Fallback Group）**：当当前 prompt 无参考答案（纯探索样本）时，自动回退为标准 GRPO 结果优势：
-     $$\hat{A}_i = \frac{R_i - \text{mean}(R)}{\text{std}(R) + \epsilon}$$
-2. **下游策略损失（GSPO Policy Loss）**：
-   * 传统的 Token 级重要性采样在 $L \ge 8192$ 长度下容易数值不稳定；GSPO 改用**序列级几何平均重要性比率**：
-     $$s_i(\theta) = \left( \frac{\pi_\theta(y_i \mid x)}{\pi_{\theta_{\text{old}}}(y_i \mid x)} \right)^{\frac{1}{|y_i|}} = \exp\left( \frac{1}{|y_i|} \sum_{t=1}^{|y_i|} (\log \pi_\theta(y_{i,t}) - \log \pi_{\theta_{\text{old}}}(y_{i,t})) \right)$$
-   * 采用双边裁剪：$\text{clip}(s_i(\theta), 1 - \epsilon_{\text{low}}, 1 + \epsilon_{\text{high}}) \cdot \hat{A}_{\text{SubTB}, t}$，不仅消除了 Token 乘积爆炸，更与 SubTB 形成“宏观序列控漂移 + 微观局部控梯度”的强力协同。
+   * **【核心数学定理：均值守恒定理】**：对任意 $\lambda \in [0, 1]$，序列内所有 Token 的优势均值恒等于宏观轨迹平衡优势：
+     $$\frac{1}{L} \sum_{t=1}^L \hat{A}_{\text{SubTB}, t} \equiv \hat{A}_{\text{TB}}$$
+
+#### (2) `flow_balance`：经典 Trajectory Balance + SubTB
+保留了标准 FlowBalance 结构，参数为 `beta_q` 与 `eta_R`，支持 `subtb_lambda` 调节微观与宏观信用。无特权数据时自动回退为纯 GSPO。
+
+---
+
+### 3. 关键修正：强化学习尺度不变性与长度归一化
+
+在旧版实现中，由于沿用了传统独立 Actor 时代 FlowSD 回归损失的求导结果：
+$$\mathcal{L}_{\text{FlowSD}} = \left( \frac{1}{L} \sum_{t=1}^L \log \pi_\theta(y_t) - \text{target} \right)^2 \implies \frac{\partial \mathcal{L}}{\partial \log \pi_t} = \frac{2}{L} \left( \frac{1}{L} \sum_{t=1}^L \log \pi_\theta(y_t) - \text{target} \right)$$
+公式内部包含了一个 $1/L$。
+
+**陷阱所在**：
+在现代强化学习架构（VeRL GSPO）中，策略梯度的外层损失函数**本身已经**执行了 Token 级序列平均（`seq-mean-token-mean`）：
+$$\mathcal{L}_{\text{GSPO}}(\theta) = - \mathbb{E}_i \left[ \frac{1}{|y_i|} \sum_{t=1}^{|y_i|} \text{clip}(s_i(\theta), 1-\epsilon_{\text{low}}, 1+\epsilon_{\text{high}}) \cdot \hat{A}_{i, t} \right]$$
+
+如果内部优势估计 $\hat{A}_{i, t}$ 再次除以 $L$，就会导致整体梯度被二次除以长度（$1 / L^2$）。在长思维链推理任务中（$L \approx 2000 \sim 4000$）：
+* 原版错误计算：$\hat{A}$ 坍缩至 $0.0005$，长思维链策略几乎**冻结不更新**；
+* 修正后计算：$\hat{A} \sim \mathcal{O}(1)$，保持长短序列之间尺度不变（Scale-Invariant），梯度稳定传递！
+
+本项目已在 `flowbalance_adv.py` 与 `c_flowbalance_adv.py` 中彻底修复该问题。
+
+---
+
+### 4. 下游策略损失（GSPO Policy Loss）
+
+GSPO 采用序列级几何平均重要性采样比率 $s_i(\theta)$ 代替传统 Token 积乘：
+$$s_i(\theta) = \exp\left( \frac{1}{|y_i|} \sum_{t=1}^{|y_i|} (\log \pi_\theta(y_{i,t}) - \log \pi_{\theta_{\text{old}}}(y_{i,t})) \right)$$
+双边裁剪：$\text{clip}(s_i(\theta), 1 - \epsilon_{\text{low}}, 1 + \epsilon_{\text{high}}) \cdot \hat{A}_{\text{SubTB}, t}$，与 SubTB 优势形成“宏观序列控漂移 + 微观步骤赋信用”的高效协同。
 
 ---
 
@@ -123,16 +167,18 @@ bash recipe/flowbalance/run_math_flowbalance_gspo.sh
 
 ### 2. 关键参数对照与深度解析
 
-下表详细对比官方 `run_math_flowsd.sh` 与我们的 `run_math_flowbalance_gspo.sh` 的核心配置项：
+下表详细对比官方 `run_math_flowsd.sh` 与本项目 (`flow_balance` / `c_flow_balance` + GSPO) 的核心配置项：
 
-| 参数项 | 官方 FlowSD 配置 | 本方案 (FlowBalance + GSPO) | 作用与解析 |
+| 参数项 | 官方 FlowSD 配置 | 本方案 (`flow_balance` / `c_flow_balance`) | 作用与深度解析 |
 | :--- | :--- | :--- | :--- |
-| `algorithm.adv_estimator` | `grpo` | **`flow_balance`** | 启用 Trajectory Balance 优势估计器；对无特权样本自动回退至 GRPO。 |
-| `actor.policy_loss.loss_mode` | `flowsd` | **`gspo`** | 启用序列级几何重要性加权策略损失，替换 Token 级损失。 |
-| `actor.loss_agg_mode` | `token-mean` | **`seq-mean-token-mean`** | GSPO 官方推荐的损失聚合模式，均衡不同长度长思维链对梯度的贡献。 |
-| `algorithm.flowbalance_coef` | *(未定义)* | **`1.0`** | Trajectory Balance 方差项的缩放系数。 |
-| `algorithm.log_rf_init` | *(未定义)* | **`0.0`** | 配分函数估算初值 $\log \tilde{R}_F$。 |
-| `algorithm.subtb_lambda` | *(未定义)* | **`1.0`** *(可配 0.0 或 0.5)* | **SubTB 子轨迹流平衡插值旋钮**。<br>• 1.0 (默认)：纯 Trajectory Balance (原版 FlowBalance)；<br>• 0.0：纯 Detailed Balance (开启逐 Token 细粒度信用分配)；<br>• (0, 1)：SubTB 混合流平衡。无论何值均满足**均值守恒定理**。 |
+| `algorithm.adv_estimator` | `grpo` | **`c_flow_balance`** *(或 `flow_balance`)* | • **`c_flow_balance`（推荐）**：带 Pairwise AUC 真实性门控 $g_{\text{consist}}$、单形置信度 $\alpha$ 与 SubTB 连续插值的自洽流平衡估计器；<br>• **`flow_balance`**：经典 Trajectory Balance + SubTB 优势估计器。<br>两者在无特权数据时均 100% 自动回退至 GRPO/GSPO。 |
+| `algorithm.alpha` | *(未定义)* | **`0.5`** *(取值区间 $[0, 1]$)* | **`c_flow_balance` 专属**：单形凸坐标，平衡 RL 结果导向与自教师微观流平衡的相对置信度。 |
+| `algorithm.tau` | *(未定义)* | **`0.1`** *(或 `1.0`)* | **`c_flow_balance` 专属**：探索温度，缩放终局奖励项。 |
+| `algorithm.subtb_lambda` | *(未定义)* | **`1.0`** *(可配 0.0 或 0.5)* | **SubTB 子轨迹连续流平衡插值旋钮**：<br>• 1.0 (默认)：纯 Trajectory Balance (宏观序列流)；<br>• 0.0：纯 Detailed Balance (开启逐 Token 细粒度步骤信用分配)；<br>• (0, 1)：SubTB 混合流平衡。满足**均值守恒定理**。 |
+| `algorithm.clip_B` | *(未定义)* | **`4.0`** | 自教师单步差分截断半径，防止长尾离群 Token 引起数值溢出。 |
+| `algorithm.gate_no_context`| *(未定义)* | **`fallback_gspo`** | 当 Prompt 组内无有效特权解答时的策略：<br>• `fallback_gspo` (默认)：使用 GRPO 优势计算 GSPO 损失，充分利用 Rollout 数据；<br>• `drop`：将该样本优势置零。 |
+| `actor.policy_loss.loss_mode` | `flowsd` | **`gspo`** | 启用序列级几何重要性加权策略损失，替换容易方差爆炸的 Token 乘积。 |
+| `actor.loss_agg_mode` | `token-mean` | **`seq-mean-token-mean`** | GSPO 官方推荐的损失聚合模式，在序列间与序列内双重均匀加权。 |
 | `data.max_prompt_length` | `2048` | `2048` | Prompt 输入最大长度截断。 |
 | `data.max_response_length`| `8192` | `8192` (可配 16384) | 限制长思维链最大生成 Tokens。 |
 | `actor_rollout_ref.rollout.n`| `8` | `8` | 每个 Prompt 采样的候选响应数 $G$。 |
@@ -141,6 +187,30 @@ bash recipe/flowbalance/run_math_flowbalance_gspo.sh
 | `reward_model.reward_manager`| `custom_dapo` | `custom_dapo` | 基于 SymPy/MathVerify 的数学符号等价答案判定引擎。 |
 | `trainer.test_freq` | `1` | `1` | 训练中 AIME-24 在线验证频率（每 1 个 step 验证一次）。 |
 | `step180_val_enable` | `1` | `1` | 到达 180 步时自动触发后台 7 大 Benchmark 5-Seed 完整评测。 |
+
+#### 快速切换配置示例
+
+在启动脚本中，只需修改 `algorithm.adv_estimator` 及相应超参即可一键切换：
+
+```bash
+# 方案 A: 使用升级版 C-FlowBalance (AUC Gating + SubTB 细粒度赋权)
+python3 -m verl.trainer.main_ppo \
+    algorithm.adv_estimator=c_flow_balance \
+    algorithm.alpha=0.5 \
+    algorithm.tau=0.1 \
+    algorithm.subtb_lambda=0.5 \
+    actor.policy_loss.loss_mode=gspo \
+    ...
+
+# 方案 B: 使用经典 Trajectory Balance (宏观序列流平衡)
+python3 -m verl.trainer.main_ppo \
+    algorithm.adv_estimator=flow_balance \
+    algorithm.beta_q=0.5 \
+    algorithm.eta_R=1.0 \
+    algorithm.subtb_lambda=1.0 \
+    actor.policy_loss.loss_mode=gspo \
+    ...
+```
 
 ### 3. 显存与并行规模规划（以单机 8 卡为基准）
 本方案默认按照**单机 8 卡（如 8 × A100/H800/H20）**环境进行开箱即用配置：
@@ -226,19 +296,44 @@ bash recipe/flowsd/submit_step180_val.sh
 ## 五、调试建议与常见问题 (FAQ)
 
 ### Q1: 训练初期出现 OOM（显存溢出）如何解决？
-1. 将 `sp_size` 从 4 提升为 8（进一步平摊激活值）。
+1. 将 `sp_size` 从 2 或 4 提升为 8（序列并行平摊长思维链的中间激活值）。
 2. 调小 `train_prompt_mini_bsz`（例如由 128 减至 64）。
-3. 调低 `rollout.gpu_memory_utilization`（例如由 0.60 降至 0.50）。
+3. 调低 `rollout.gpu_memory_utilization`（例如由 0.60 降至 0.50，为 KV Cache 和梯度预留空间）。
 
-### Q2: 如何验证 FlowBalance 估计器是否正常工作？
-运行项目内的集成单元测试：
+### Q2: 如何验证估计器与策略损失是否正常工作？
+运行仓库内置的端到端自动化集成单元测试集：
 ```bash
-python -m pytest tests/test_flowbalance_gspo_integration.py -v
-```
-测试通过即保证：
-* 特权分支计算 TB 方差优势。
-* 无特权分支（`mask=0`）完全回退为标准 GRPO 组内优势。
-* GSPO 策略损失反向传播梯度正常流动。
+# 1. 验证经典 FlowBalance + GSPO 端到端闭环
+python tests/test_flowbalance_gspo_integration.py
 
-### Q3: 为什么训练后评测必须使用多种子（5 Seeds）？
-长思维链模型在温度 $T=0.6$ 下具有随机性，单个种子在 30 题规模的 AIME 上每做对/错 1 题就会引起 $3.33\%$ 的剧烈波动。采用 5-Seed 均值与方差（Mean ± Std）是目前大模型竞赛数学评测领域公认的标准学术规范。
+# 2. 验证 C-FlowBalance + AUC Gating + SubTB 均值守恒
+python tests/test_c_flowbalance_integration.py
+```
+测试全面覆盖：
+* 特权自教师分支计算与非特权回退至 GRPO/GSPO 的无缝切换；
+* Pairwise AUC 一致性门控在好教师（$g_{\text{consist}}=1$）、中性教师（$g_{\text{consist}}=0$）和有毒教师（$g_{\text{consist}}=0$）下的**熔断安全机制**；
+* 细粒度 Token 信用分配对关键突破步骤与无效步骤的区分能力；
+* SubTB 在任意 $\lambda \in [0, 1]$ 下的严格**均值流守恒**（$\text{diff} < 10^{-5}$）；
+* GSPO 策略损失反向传播与有效梯度的正常流动。
+
+### Q3: 为什么移除了 Advantage 内部冗余的长度除法（除以 $L$）？
+在原版 FlowSD 的独立 actor 脚本中，损失函数是均方误差回归：
+$$\mathcal{L} = \left(\frac{1}{L}\sum_{t=1}^L \log \pi - \text{target}\right)^2$$
+其对单个 Token 对数概率的导数必然包含链式法则带来的内部因子 $\frac{2}{L}$。
+但在标准强化学习中，VeRL 的 `compute_policy_loss_gspo` 损失函数外层**已经统一执行了序列 Token 平均**（`loss_agg_mode="seq-mean-token-mean"`，即外层已有 $\frac{1}{|y_i|}\sum_t \dots$）。
+如果优势估计器 $\hat{A}_t$ 内部也除以 $L$，总体梯度就会变为 $\mathcal{O}(1/L^2)$。当模型生成长思维链（例如 $L=2000$）时，优势值直接缩水至 $0.0005$，导致策略无法更新；而短序列（$L=50$）优势却为 $0.02$（相差 40 倍）。
+**修正后的优势估计器 $\hat{A}_t$ 保持为 $\mathcal{O}(1)$ 量纲**，使得不同长度的思维链在策略梯度下获得公平的更新权重。
+
+### Q4: 自教师生成错误或幻觉推理时，C-FlowBalance 如何确保策略不被误导？
+原版 FlowSD 使用 $\delta_t \cdot \text{sign}(A)$。当组内全错（$A < 0$）且自教师也走偏（$\delta_t < 0$）时，两负相乘为正，策略反而会强化这个错误步骤。
+`c_flow_balance` 引入 **Group Pairwise AUC 真实性一致性门控**：
+* 只有当自教师在整组 Rollout 中的偏好排序与真实验题判分（$R \in \{0, 1\}$）呈现正相关（$\text{AUC} > 0.5$）时，才激活门控系数 $g_{\text{consist}} = 2 \cdot (\text{AUC} - 0.5)$；
+* 一旦自教师偏好与真实答案不一致或甚至反转（$\text{AUC} \le 0.5$），门控自动置零（$g_{\text{consist}} = 0$），**直接熔断自教师信号**，只保留客观强化学习结果优势更新，从根源上杜绝了对错误步骤的正向奖励。
+
+### Q5: SubTB 的连续插值参数 $\lambda$ 该如何选择？
+* **$\lambda = 1.0$（Trajectory Balance）**：整条轨迹所有 Token 享有相同优势。方差最小，但在非常长的思维链中缺乏对单步推导好坏的辨别力。
+* **$\lambda = 0.0$（Detailed Balance）**：完全依据每一步相对于自教师目标的差距计算 Token 级局部优势。归因能力最强，适合需要细粒度修正推理步骤的场景。
+* **$\lambda = 0.5$（SubTB 混合平衡，推荐探索）**：兼顾宏观路径连贯性与微观步骤指导，由于严格满足均值守恒定理，不会破坏全局收敛性。
+
+### Q6: 为什么训练后评测必须使用多种子（5 Seeds）？
+长思维链模型在探索温度 $T=0.6$ 下具有较高随机性。单个种子在 30 题规模的 AIME 上，仅仅做对或做错 1 道题就会引起 $3.33\%$ 的剧烈百分比波动。采用 5-Seed 均值与方差（Mean ± Std）是目前大模型竞赛数学评测领域公认的防过拟合学术规范。
