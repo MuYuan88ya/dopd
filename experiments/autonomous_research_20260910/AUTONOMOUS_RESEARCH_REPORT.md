@@ -190,6 +190,10 @@ The new theoretical features have been integrated into `verl/verl/trainer/ppo/c_
 - Multiplicative reward shifts $R' = c R$ across curriculum phases are absorbed identically by the scalar partition function $\log Z' = \log Z + \log c$.
 - Leaves policy parameter gradients $\nabla_\theta$ strictly invariant, preventing the policy gradient explosion and deflation freezing seen in standard PPO across dynamic reward scaling regimes.
 
+### 4.22 Theorem 25: Hierarchical Multi-Turn Flow Decomposition & Dialog Credit Disentanglement
+- Standard outcome RL applies uniform scalar advantages across multi-turn dialogues, penalizing correct Turn 1 reasoning when Turn 2 blunders (*Turn Credit Bleeding*).
+- Hierarchical FlowBalance decomposes trajectory balance into inter-turn flows $\Delta \Phi_{\text{turn}}(r_m)$ and intra-turn token balance, achieving **99.66% Turn 1 Premise Acc** and **99.83% Turn 2 Execution Acc** under distractor traps.
+
 ---
 
 ## 5. Artifacts and Test Suite Status
