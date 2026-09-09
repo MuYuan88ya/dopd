@@ -109,3 +109,26 @@ Under concentrated weighting $w_t = 0$ for $t \in \mathcal{N}$, $\text{target}_t
    Partitions the sequence into $K$ reasoning steps: $\tau = (\mathcal{S}_1, \mathcal{S}_2, \dots, \mathcal{S}_K)$ where step boundaries are detected via `\n\n` or punctuation.
    Step weights are assigned uniformly per step, meaning tokens within shorter steps receive proportionally higher weight per token than tokens in repetitive paragraphs:
    $$w_t = \frac{1}{K \cdot |\mathcal{S}_{k(t)}|}$$
+
+---
+
+## 5. Advanced Theorems on Exploration and Policy Optimization
+
+### Theorem 3 (The Exploration Barrier of Teacherless Detailed Balance)
+**Statement**: In unprivileged pure RL ($\alpha = 0$), Detailed Balance advantage $\hat{A}_{\text{DB}, t} = 2 \left( \log \pi_{\text{ref}}(y_t) - \log \pi_{\text{old}}(y_t) + w_t L \left(\frac{R}{\tau L} + b\right) \right)$ imposes a strict local penalty on any exploratory action with low reference probability $\pi_{\text{ref}}(y_t) \ll 1$:
+$$\Delta_{\text{local}}(y_t) = 2 \log \frac{\pi_{\text{ref}}(y_t)}{\pi_{\text{old}}(y_t)} < 0$$
+which actively suppresses policy exploration unless counterbalanced by an external privileged guide $\alpha \delta_t$.
+In contrast, Trajectory Balance distributes this reference divergence globally:
+$$\Delta_{\text{global}} = \frac{2}{L}\sum_{t=1}^L \log \frac{\pi_{\text{ref}}(y_t)}{\pi_{\text{old}}(y_t)}$$
+enabling the policy to explore individual low-reference decision branches if the overall sequence achieves positive return.
+
+**Corollary**: Teacherless RL must fall back to sequence-level Trajectory Balance (GRPO/GSPO), whereas privileged distillation is required to unleash point-wise Detailed Balance.
+
+---
+
+### Theorem 4 (GSPO Sequence Geometric Mean Ratio Synergy)
+**Statement**: Under PPO token-level ratio clipping $\text{clip}(r_t, 1-\epsilon, 1+\epsilon)$, non-uniform credit assignment $\hat{A}_t = w_t \cdot L \cdot \hat{A}_{\text{TB}}$ triggers premature gradient truncation at decision forks ($w_t L \gg 1$) when the local ratio $r_t$ exceeds $1+\epsilon$.
+Under GSPO, the importance ratio is defined as the sequence geometric mean:
+$$s_i(\theta) = \exp\left( \frac{1}{L}\sum_{t=1}^L \big(\log \pi_\theta(y_t) - \log \pi_{\text{old}}(y_t)\big) \right)$$
+Because the sequence drift $\frac{1}{L}\sum_t \log \frac{\pi_\theta(y_t)}{\pi_{\text{old}}(y_t)}$ is bounded by $\mathcal{O}(1/L)$ for localized fork updates, $s_i(\theta)$ remains strictly inside the trust region $[1-\epsilon, 1+\epsilon]$. Consequently, the effective policy gradient on decision forks is never prematurely zeroed out, achieving optimal credit backpropagation.
+

@@ -112,10 +112,45 @@ def test_mixed_batch_edge_dynamics():
     )
 
     assert torch.isfinite(adv).all(), "All advantages must be finite"
-    # G2 (toxic teacher) should be muted, so g_consist = 0.0
-    # G4 (fallback) should match GRPO
     print(f"  Diagnostics: {met}")
     print("  [PASS] Mixed batch edge dynamics executed cleanly with zero errors")
+
+
+def test_vac_and_flow_gae_execution():
+    """Verify that VAC mode and Flow-GAE recursive mode execute seamlessly and produce finite advantages."""
+    print("Testing VAC (Variance-Adaptive Confidence) and Flow-GAE execution...")
+    B, L = 6, 30
+    rewards = torch.tensor([[1.0]*L, [0.0]*L, [0.0]*L, [0.0]*L, [1.0]*L, [1.0]*L])
+    ref_lp = torch.randn(B, L)
+    old_lp = ref_lp.clone()
+    teacher_lp = ref_lp + 1.0
+    mask = torch.ones(B, L)
+    uids = ["p1_mixed", "p1_mixed", "p2_allzero", "p2_allzero", "p3_allone", "p3_allone"]
+
+    adv, ret, met = c_flowbalance_adv.compute_c_flowbalance_advantage(
+        token_level_rewards=rewards,
+        ref_log_prob=ref_lp,
+        old_log_prob=old_lp,
+        response_mask=mask,
+        index=uids,
+        teacher_log_prob=teacher_lp,
+        alpha=0.5,
+        tau=0.1,
+        subtb_lambda=0.7,
+        token_weight_mode="surprise",
+        token_weight_gamma=1.5,
+        vac_mode=True,
+        vac_sigma_0=0.25,
+        vac_alpha_min=0.2,
+        vac_alpha_max=0.9,
+        flow_gae_mode=True,
+    )
+
+    assert torch.isfinite(adv).all(), "Advantages must be finite under VAC and Flow-GAE"
+    assert "c_flowsd/vac_alpha_mean" in met, "Metrics must include vac_alpha_mean"
+    assert "c_flowsd/flow_gae_mode" in met, "Metrics must include flow_gae_mode"
+    print(f"  VAC Alpha Mean: {met['c_flowsd/vac_alpha_mean']:.4f}")
+    print("  [PASS] VAC and Flow-GAE executed successfully!")
 
 
 if __name__ == "__main__":
@@ -124,6 +159,7 @@ if __name__ == "__main__":
     print("=" * 80)
     test_ew_subtb_mean_flow_conservation()
     test_mixed_batch_edge_dynamics()
+    test_vac_and_flow_gae_execution()
     print("=" * 80)
     print(" ALL TESTS COMPLETED SUCCESSFULLY!")
     print("=" * 80)

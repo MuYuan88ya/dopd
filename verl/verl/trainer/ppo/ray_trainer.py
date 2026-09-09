@@ -331,6 +331,40 @@ def compute_advantage(
             if hasattr(algo_cfg, "get")
             else getattr(algo_cfg, "g_consist_prior", 0.5)
         )
+        vac_mode = (
+            algo_cfg.get("vac_mode", False)
+            if hasattr(algo_cfg, "get")
+            else getattr(algo_cfg, "vac_mode", False)
+        )
+        vac_sigma_0 = (
+            algo_cfg.get("vac_sigma_0", 0.25)
+            if hasattr(algo_cfg, "get")
+            else getattr(algo_cfg, "vac_sigma_0", 0.25)
+        )
+        vac_alpha_min = (
+            algo_cfg.get("vac_alpha_min", 0.2)
+            if hasattr(algo_cfg, "get")
+            else getattr(algo_cfg, "vac_alpha_min", 0.2)
+        )
+        vac_alpha_max = (
+            algo_cfg.get("vac_alpha_max", 0.8)
+            if hasattr(algo_cfg, "get")
+            else getattr(algo_cfg, "vac_alpha_max", 0.8)
+        )
+        flow_gae_mode = (
+            algo_cfg.get("flow_gae_mode", False)
+            if hasattr(algo_cfg, "get")
+            else getattr(algo_cfg, "flow_gae_mode", False)
+        )
+        step_delimiter_mask = data.batch.get("step_delimiter_mask", None)
+        if step_delimiter_mask is None and "step_token_ids" in algo_cfg and "responses" in data.batch:
+            step_token_ids = algo_cfg.get("step_token_ids", [])
+            if step_token_ids:
+                responses = data.batch["responses"]
+                mask = torch.zeros_like(responses, dtype=torch.bool)
+                for st_id in step_token_ids:
+                    mask = mask | (responses == st_id)
+                step_delimiter_mask = mask.float()
 
         advantages, returns, metrics = compute_c_flowbalance_advantage(
             token_level_rewards=rewards,
@@ -350,6 +384,12 @@ def compute_advantage(
             token_weight_mode=token_weight_mode,
             token_weight_gamma=token_weight_gamma,
             g_consist_prior=g_consist_prior,
+            vac_mode=vac_mode,
+            vac_sigma_0=vac_sigma_0,
+            vac_alpha_min=vac_alpha_min,
+            vac_alpha_max=vac_alpha_max,
+            flow_gae_mode=flow_gae_mode,
+            step_delimiter_mask=step_delimiter_mask,
             config=config,
         )
         data.batch["advantages"] = advantages

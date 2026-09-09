@@ -67,6 +67,47 @@ def compute_pairwise_auc_group(
     return auc_val, g_consist_val
 
 
+def _compute_step_weights_vectorized(
+    step_delimiter_mask: torch.Tensor,
+    response_mask: torch.Tensor,
+    token_surprise: Optional[torch.Tensor] = None,
+    gamma: float = 1.0,
+    eps: float = 1e-6,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Computes normalized token weights w in Delta^{L-1} aligned to semantic reasoning steps."""
+    B, L = response_mask.shape
+    device = response_mask.device
+    dtype = response_mask.dtype
+
+    delimiters = (step_delimiter_mask.bool() & response_mask.bool()).long()
+    step_id_shifted = torch.zeros_like(delimiters)
+    step_id_shifted[:, 1:] = delimiters[:, :-1]
+    step_ids = torch.cumsum(step_id_shifted, dim=-1) * response_mask.long()
+
+    max_steps = int(step_ids.max().item()) + 1
+    step_token_counts = torch.zeros(B, max_steps, device=device, dtype=dtype)
+    step_token_counts.scatter_add_(1, step_ids, response_mask)
+
+    if token_surprise is not None:
+        raw_surprise = (token_surprise.clamp(min=0.0) + eps).pow(gamma) * response_mask
+        step_surprise = torch.zeros(B, max_steps, device=device, dtype=dtype)
+        step_surprise.scatter_add_(1, step_ids, raw_surprise)
+        has_tokens = (step_token_counts > 0).float()
+        step_mass = (step_surprise + eps) * has_tokens
+        step_weights = step_mass / step_mass.sum(dim=-1, keepdim=True).clamp(min=1e-8)
+    else:
+        has_tokens = (step_token_counts > 0).float()
+        num_steps_per_seq = has_tokens.sum(dim=-1, keepdim=True).clamp(min=1.0)
+        step_weights = has_tokens / num_steps_per_seq
+
+    step_token_density = step_weights / step_token_counts.clamp(min=1.0)
+    token_weights = torch.gather(step_token_density, 1, step_ids) * response_mask
+    w_sum = token_weights.sum(dim=-1, keepdim=True).clamp(min=1e-8)
+    token_weights = (token_weights / w_sum) * response_mask
+
+    return token_weights, step_ids
+
+
 @register_adv_est("c_flow_balance")
 def compute_c_flowbalance_advantage(
     token_level_rewards: torch.Tensor,
@@ -87,6 +128,12 @@ def compute_c_flowbalance_advantage(
     token_weight_mode: str = "uniform",
     token_weight_gamma: float = 1.0,
     g_consist_prior: float = 0.5,
+    vac_mode: bool = False,
+    vac_sigma_0: float = 0.25,
+    vac_alpha_min: float = 0.2,
+    vac_alpha_max: float = 0.8,
+    flow_gae_mode: bool = False,
+    step_delimiter_mask: Optional[torch.Tensor] = None,
     epsilon: float = 1e-6,
     config: Optional[Any] = None,
 ) -> tuple[torch.Tensor, torch.Tensor, dict[str, float]]:
@@ -191,6 +238,7 @@ def compute_c_flowbalance_advantage(
 
     baseline = torch.zeros(batch_size, device=device, dtype=dtype)
     g_consist_tensor = torch.zeros(batch_size, device=device, dtype=dtype)
+    alpha_tensor = torch.full((batch_size,), fill_value=alpha, device=device, dtype=dtype)
     is_eligible = torch.zeros(batch_size, device=device, dtype=torch.bool)
     degenerate_groups = 0
     muted_toxic_teachers = 0
@@ -219,11 +267,19 @@ def compute_c_flowbalance_advantage(
         if auc_val < 0.5 - 1e-6:
             muted_toxic_teachers += 1
 
+        # Variance-Adaptive Confidence (VAC): scale alpha dynamically based on outcome variance
+        if vac_mode:
+            group_std = group_scores.std().item() if len(group_scores) > 1 else 0.0
+            alpha_group = vac_alpha_min + (vac_alpha_max - vac_alpha_min) * float(np.exp(-group_std / max(vac_sigma_0, 1e-4)))
+        else:
+            alpha_group = alpha
+
+        alpha_tensor[valid_indices] = alpha_group
         g_consist_tensor[valid_indices] = g_consist_val
         is_eligible[valid_indices] = True
 
-        # Target uncentered: seq_logp_ref + (alpha * g_consist) * G_T + R_term_seq
-        effective_teacher_gain = (alpha * g_consist_val) * G_T_seq[valid_indices]
+        # Target uncentered: seq_logp_ref + (alpha_group * g_consist) * G_T + R_term_seq
+        effective_teacher_gain = (alpha_group * g_consist_val) * G_T_seq[valid_indices]
         target_uncentered = seq_logp_ref[valid_indices] + effective_teacher_gain + R_term_seq[valid_indices]
 
         # Zero-residual baseline b_group
@@ -232,13 +288,23 @@ def compute_c_flowbalance_advantage(
         baseline[idx_tensor] = group_baseline
 
     # 6. Construct C-FlowBalance Target and Detailed Balance Advantage
-    effective_alpha_token = (alpha * g_consist_tensor).unsqueeze(-1)
+    effective_alpha_token = (alpha_tensor * g_consist_tensor).unsqueeze(-1)
 
     if token_weight_mode == "surprise" and abs(token_weight_gamma) > 1e-6:
         # Surprise-weighted SubTB: w_t proportional to (|delta_t| + eps)^gamma
         # Concentrates macro flow updates on decision-critical tokens
         surprise = (delta.abs() + 0.05).pow(token_weight_gamma) * response_mask
         w = surprise / surprise.sum(dim=-1, keepdim=True).clamp(min=1e-8)
+        w_factor = w * lengths.unsqueeze(-1)
+        macro_flow_term = w_factor * (R_term_seq + baseline).unsqueeze(-1)
+    elif token_weight_mode == "step" and step_delimiter_mask is not None:
+        # Step-weighted SubTB: semantic step boundaries (e.g. newline tokens)
+        w, _ = _compute_step_weights_vectorized(
+            step_delimiter_mask=step_delimiter_mask.to(device=device, dtype=dtype),
+            response_mask=response_mask,
+            token_surprise=delta.abs() if abs(token_weight_gamma) > 1e-6 else None,
+            gamma=token_weight_gamma,
+        )
         w_factor = w * lengths.unsqueeze(-1)
         macro_flow_term = w_factor * (R_term_seq + baseline).unsqueeze(-1)
     else:
@@ -257,8 +323,19 @@ def compute_c_flowbalance_advantage(
     A_TB = (A_DB.sum(dim=-1) / lengths).unsqueeze(-1).expand_as(A_DB) * response_mask
 
     if subtb_lambda < 1.0 - 1e-6:
-        # SubTB convex combination: (1 - lambda) * DB + lambda * TB
-        effective_adv = (1.0 - subtb_lambda) * A_DB + subtb_lambda * A_TB
+        if flow_gae_mode:
+            # Flow-GAE: recursive multi-horizon span discounting along the trajectory
+            adv_gae = torch.zeros_like(A_DB)
+            running_future = torch.zeros(batch_size, device=device, dtype=dtype)
+            seq_dim = A_DB.shape[1]
+            for t in reversed(range(seq_dim)):
+                running_future = (1.0 - subtb_lambda) * A_DB[:, t] + subtb_lambda * (running_future if t < seq_dim - 1 else A_TB[:, t])
+                running_future = running_future * response_mask[:, t]
+                adv_gae[:, t] = running_future
+            effective_adv = adv_gae
+        else:
+            # Standard 2-point SubTB convex combination: (1 - lambda) * DB + lambda * TB
+            effective_adv = (1.0 - subtb_lambda) * A_DB + subtb_lambda * A_TB
     else:
         # Pure TB
         effective_adv = A_TB
@@ -288,6 +365,8 @@ def compute_c_flowbalance_advantage(
         "c_flowsd/g_consist_mean": float(g_consist_tensor[is_eligible].mean().item()) if eligible_count else 0.0,
         "c_flowsd/auc_mean": float(np.mean(all_aucs)) if all_aucs else 0.5,
         "c_flowsd/alpha": float(alpha),
+        "c_flowsd/vac_alpha_mean": float(alpha_tensor[is_eligible].mean().item()) if eligible_count else float(alpha),
+        "c_flowsd/flow_gae_mode": float(flow_gae_mode),
         "c_flowsd/tau": float(tau),
         "c_flowsd/subtb_lambda": float(subtb_lambda),
         "c_flowsd/advantage_mean": float(final_token_adv[response_mask.bool()].mean().item()) if response_mask.any() else 0.0,

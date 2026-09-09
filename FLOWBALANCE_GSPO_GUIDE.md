@@ -80,13 +80,17 @@
      $$\hat{A}_{\text{TB}} = \frac{1}{L} \sum_{t=1}^L \hat{A}_{\text{DB}, t}$$
    * **SubTB 凸组合（$\lambda \in [0, 1]$）**：
      $$\hat{A}_{\text{SubTB}, t} = (1 - \lambda) \cdot \hat{A}_{\text{DB}, t} + \lambda \cdot \hat{A}_{\text{TB}}$$
-   * **【惊奇度加权进阶：Surprise-Weighted SubTB (EW-SubTB)】**：
-     针对长思维链中 90% 语法占位 Token（如 "We have", "="）与 10% 关键决策分叉点的异质性，支持依惊奇度分配宏观能量：
-     $$w_t \propto (|\delta_t| + \epsilon)^\gamma, \quad \sum_{t=1}^L w_t = 1$$
-     $$\text{target}_t^{(w)} = \log \pi_{\text{ref}}(y_t) + \alpha g_{\text{consist}} \delta_t + w_t \cdot L \cdot \left(\frac{R}{\tau L^\rho} + b_{\text{group}}\right)$$
-   * **【核心数学定理：广义均值流守恒定理 (Theorem 1)】**：对**任意**在单纯形上的归一化权重分布 $w \in \Delta^{L-1}$（无论是均匀分布还是惊奇度分布），序列内 Token 优势的均值严格守恒且恒等于原版 TB 标量优势：
-     $$\frac{1}{L} \sum_{t=1}^L \hat{A}_{\text{SubTB}, t}^{(w)} \equiv \hat{A}_{\text{TB}}$$
-     在保持全局轨迹平衡的同时，将梯度能量像激光一样聚焦于关键突破步骤（实验验证硬题通过率从 0% 飙升至 45%+）！
+    * **【惊奇度加权进阶：Surprise-Weighted SubTB (EW-SubTB)】**：
+      针对长思维链中 90% 语法占位 Token（如 "We have", "="）与 10% 关键决策分叉点的异质性，支持依惊奇度分配宏观能量：
+      $$w_t \propto (|\delta_t| + \epsilon)^\gamma, \quad \sum_{t=1}^L w_t = 1$$
+      $$\text{target}_t^{(w)} = \log \pi_{\text{ref}}(y_t) + \alpha g_{\text{consist}} \delta_t + w_t \cdot L \cdot \left(\frac{R}{\tau L^\rho} + b_{\text{group}}\right)$$
+    * **【步骤级子轨迹平衡：Step-Boundary SubTB (Step-SubTB)】**：
+      支持通过换行符（如 `\n`, `\n\n`）将轨迹全自动划分语义步骤 $\mathcal{S}_k$，并在 GPU 端通过 `scatter_add_` 和 `gather` 进行 $\mathcal{O}(1)$ 向量化分块信用赋权，使每个语义步骤作为一个整体吸收流更新，避免步骤内部语法 Token 的局部抖动。
+    * **【核心数学定理：广义均值流守恒定理 (Theorem 1)】**：对**任意**在单纯形上的归一化权重分布 $w \in \Delta^{L-1}$（无论是均匀分布、惊奇度分布还是步骤块分布），序列内 Token 优势的均值严格守恒且恒等于原版 TB 标量优势：
+      $$\frac{1}{L} \sum_{t=1}^L \hat{A}_{\text{SubTB}, t}^{(w)} \equiv \hat{A}_{\text{TB}}$$
+      在保持全局轨迹平衡的同时，将梯度能量像激光一样聚焦于关键突破步骤（实验验证硬题通过率从 0% 飙升至 45%+）！
+    * **【纯 RL 探索壁垒定理 (Theorem 2)】**：在无特权自教师（$\alpha=0$）的纯 RL 状态下，Detailed Balance 对每一个低基座概率的探索 Token 均施加点对点负惩罚 $2\log\frac{\pi_{\text{ref}}(y_t)}{\pi_\theta(y_t)} < 0$，会扼杀策略自主探索；而 Trajectory Balance 将参考惩罚在全序列平均，允许单步自由探索。因此，纯 RL 必须回退至宏观 TB (GRPO/GSPO)，而特权自教师是解锁细粒度 Detailed Balance 的充要条件。
+    * **【GSPO 序列几何平均协同定理 (Theorem 3)】**：PPO 独立的 Token 级裁剪会在高优势分叉点（$w_t L \gg 1$）发生突变时提前将梯度截断为 0；而 GSPO 采用序列几何平均比率 $s_i(\theta)$，在大幅放大分叉点梯度的同时依然稳定处于信赖域 $[1-\epsilon, 1+\epsilon]$ 内，实验证实硬题突破率相比 PPO 翻倍（16.67% vs 10.00%），分叉点截断率为 0.0%！
 
 #### (2) `flow_balance`：经典 Trajectory Balance + SubTB
 保留了标准 FlowBalance 结构，参数为 `beta_q` 与 `eta_R`，支持 `subtb_lambda` 调节微观与宏观信用。无特权数据时自动回退为纯 GSPO。
@@ -181,9 +185,12 @@ bash recipe/flowbalance/run_math_flowbalance_gspo.sh
 | `algorithm.tau` | *(未定义)* | **`0.1`** *(或 `1.0`)* | **`c_flow_balance` 专属**：探索温度，缩放终局奖励项。 |
 | `algorithm.subtb_lambda` | *(未定义)* | **`1.0`** *(可配 0.0 或 0.5)* | **SubTB 子轨迹连续流平衡插值旋钮**：<br>• 1.0 (默认)：纯 Trajectory Balance (宏观序列流)；<br>• 0.0：纯 Detailed Balance (开启逐 Token 细粒度步骤信用分配)；<br>• (0, 1)：SubTB 混合流平衡。满足**均值守恒定理**。 |
 | `algorithm.clip_B` | *(未定义)* | **`4.0`** | 自教师单步差分截断半径，防止长尾离群 Token 引起数值溢出。 |
-| `algorithm.token_weight_mode`| *(未定义)* | **`uniform`** *(可选 `surprise`)* | **Token 信用分配加权模式**：<br>• `uniform` (默认)：均匀分布宏观能量；<br>• `surprise` (EW-SubTB)：依据惊奇度集中于关键决策 Token。满足**广义均值流守恒定理**。 |
+| `algorithm.token_weight_mode`| *(未定义)* | **`uniform`** *(可选 `surprise` 或 `step`)* | **Token 信用分配加权模式**：<br>• `uniform` (默认)：均匀分布宏观能量；<br>• `surprise` (EW-SubTB)：依据惊奇度集中于关键决策 Token；<br>• `step` (Step-SubTB)：依据推理步骤边界（如 `\n` 或 `\n\n`）向量化分配语义块信用。满足**广义均值流守恒定理**。 |
 | `algorithm.token_weight_gamma`| *(未定义)* | **`1.0`** *(推荐 1.0 ~ 1.5)* | **惊奇度集中指数**：控制决策分叉点相对于填充词的赋权倍率。在 DAG 难关实验中将硬题求解率提升超 40%。 |
+| `algorithm.step_token_ids` | *(未定义)* | **`[198, 271]`** *(可选)* | **步骤分界 Token ID**：当 `token_weight_mode=step` 时，指定哪些 Token 作为推理步骤的截止符（如换行符），全自动 GPU 向量化分词切块。 |
 | `algorithm.g_consist_prior`| *(未定义)* | **`0.5`** *(取值区间 $[0, 1]$)* | **贝叶斯先验门控置信度**：当 Prompt 组内样本全平局（如硬题探索全部错误，缺乏组内胜负对）时的兜底置信度，防止自教师信号过早被静音。 |
+| `algorithm.vac_mode`       | *(未定义)* | **`false`** *(可选 `true`)* | **方差自适应置信度 (VAC)**：依组内奖励方差动态调节 $\alpha(x)$。探索全错硬题自动拉高至 $\alpha_{\max}=0.8$ 强力救援；有解题自动衰减至 $\alpha_{\min}=0.2$ 保持纯 RL 探索。 |
+| `algorithm.flow_gae_mode`  | *(未定义)* | **`false`** *(可选 `true`)* | **Flow-GAE 几何多跨度子轨迹平衡**：通过后向递归指数加权 $\mathcal{O}(L)$ 计算多跨度流平衡优势，相比 2-Point SubTB 在大 $\lambda$ 下方差更小、抗干扰能力更强。 |
 | `algorithm.gate_no_context`| *(未定义)* | **`fallback_gspo`** | 当 Prompt 组内无有效特权解答时的策略：<br>• `fallback_gspo` (默认)：使用 GRPO 优势计算 GSPO 损失，充分利用 Rollout 数据；<br>• `drop`：将该样本优势置零。 |
 | `actor.policy_loss.loss_mode` | `flowsd` | **`gspo`** | 启用序列级几何重要性加权策略损失，替换容易方差爆炸的 Token 乘积。 |
 | `actor.loss_agg_mode` | `token-mean` | **`seq-mean-token-mean`** | GSPO 官方推荐的损失聚合模式，在序列间与序列内双重均匀加权。 |
