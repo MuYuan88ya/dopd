@@ -1,0 +1,68 @@
+{
+  "flowbalance": {
+    "clean_pass": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "sampled_pass": {
+      "mean": 0.3305733936267952,
+      "std": 0.002169640517373958
+    },
+    "morse_defect": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "saddle_trap_rate": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "transversality_fidelity": {
+      "mean": 1.0,
+      "std": 0.0
+    }
+  },
+  "grpo": {
+    "clean_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "sampled_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "morse_defect": {
+      "mean": 2.4126872499118557,
+      "std": 0.004928021087551741
+    },
+    "saddle_trap_rate": {
+      "mean": 0.5039999999999999,
+      "std": 0.05986651818838307
+    },
+    "transversality_fidelity": {
+      "mean": 0.2761938250264434,
+      "std": 0.0014784063262655298
+    }
+  },
+  "ppo": {
+    "clean_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "sampled_pass": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "morse_defect": {
+      "mean": 1.8583675705921625,
+      "std": 0.004488964126365055
+    },
+    "saddle_trap_rate": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "transversality_fidelity": {
+      "mean": 0.4424897288223512,
+      "std": 0.0013466892379095385
+    }
+  }
+}
