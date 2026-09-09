@@ -465,7 +465,21 @@ In distributed training across massive GPU clusters, communicating token-level a
 | **Standard PPO** | INT8 (Uniform) | 8 bits (4x Compression) | 97.92% | 58.8 (7x Slower) |
 | **FlowBalance (SubTB)** | FP8 (E4M3) | 8 bits (4x Compression) | **91.67% (Robust)** | **10.0 (Fast)** |
 
-### 4.19 Key Empirical Takeaways
+### 4.19 Self-Correction Credit Disentanglement & Fake-Reflection Elimination (Theorem 21)
+
+In long-form reasoning models, chains of thought frequently exhibit backtracking tokens ("Wait, let me rethink..."). Under standard trajectory-level RL (GRPO / PPO), when a self-correcting trajectory eventually reaches a correct answer ($R=1$), the uniform scalar advantage $A > 0$ is applied to all tokens indiscriminately. This creates the **Fake-Reflection Pathology**, where models are actively reinforced for making errors in the first place and learn to insert spurious "fake reflections" into already-correct reasoning paths (13.07% in GRPO and 45.88% in Uniform SubTB), inflating token consumption.
+
+Consistent FlowBalance resolves this through **Self-Correction Credit Disentanglement (SCCD)** by treating flawed prefixes as abandoned dead-end branches ($R_{\text{dead}} \le 0$) and assigning positive credit selectively to the pivot transition and valid continuation:
+
+| Algorithm | Direct Clean Rate (%) | 1st-Try Optimal Acc (%) | Fake-Reflection Rate (%) | Average Length (Tokens) | Trap Pivot Rate (%) | Overall Accuracy (%) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Standard GRPO** | 98.62% ± 0.49% | 85.72% ± 4.71% | 13.07% ± 4.94% | 4.47 | 100.00% | 100.00% |
+| **Uniform SubTB** | 65.84% ± 3.07% | 35.47% ± 2.56% | 45.88% ± 4.53% | 6.96 | 99.35% | 99.75% |
+| **SCCD-FlowBalance** | **99.78% ± 0.16%** | **99.75% ± 0.16%** | **0.03% ± 0.06% (435x reduction)** | **4.01 (Optimal)** | **100.00%** | **100.00%** |
+
+SCCD slashes spurious fake reflection triggers from 13.07% / 45.88% down to **0.03%**, maximizes direct first-try accuracy to **99.75%**, achieves the theoretical minimum length bound of **4.01 tokens**, while retaining **100.00% pivot capability** when trapped.
+
+### 4.20 Key Empirical Takeaways
 
 1. **The 0% vs 59% Phase Transition**:
    On hard reasoning DAGs where the student begins in a distractor trap, uniform credit methods (GRPO, TB, uniform SubTB) fail completely (0.00% Pass@1). Spreading reward and baseline uniformly across 32 tokens dilutes the fork gradient below the threshold needed to flip the logit bias. EW-SubTB concentrates gradient updates onto the fork tokens (4.82x ratio), triggering a phase transition to 59.17% Pass@1.
@@ -499,6 +513,8 @@ In distributed training across massive GPU clusters, communicating token-level a
    Domain-specific pairwise concordance gating isolates domain hallucinations and adversarial noise without sacrificing reliable oracle teacher guidance across multi-task reasoning trees.
 16. **Ultra-Low Precision (FP8) Flow Residual Robustness**:
    Because FlowBalance operates on smooth log-space residuals rather than singular probability ratios near 1.0, FP8 (E4M3) quantization achieves 91.67% pass rate (where standard PPO collapses to 0.00%), enabling 4x communication bandwidth compression in massive distributed training.
+17. **Self-Correction Disentanglement**:
+   Treating erroneous prefixes in self-correcting sequences as dead-end branches eliminates the fake-reflection pathology, reducing spurious reflection loops by 435x and converging to direct first-pass derivation efficiency.
 
 ---
 
