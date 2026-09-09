@@ -1,0 +1,32 @@
+{
+  "flowbalance": {
+    "clean_pass_at_1_mean": 1.0,
+    "clean_pass_at_1_std": 0.0,
+    "circular_trap_rate_mean": 0.0,
+    "circular_trap_rate_std": 0.0,
+    "mean_loop_count_mean": 0.0,
+    "mean_loop_count_std": 0.0,
+    "cohomological_holonomy_mean": 0.0,
+    "cohomological_holonomy_std": 0.0
+  },
+  "grpo": {
+    "clean_pass_at_1_mean": 0.0,
+    "clean_pass_at_1_std": 0.0,
+    "circular_trap_rate_mean": 1.0,
+    "circular_trap_rate_std": 0.0,
+    "mean_loop_count_mean": 7.9319999999999995,
+    "mean_loop_count_std": 0.03867815921162747,
+    "cohomological_holonomy_mean": 10.996086872402973,
+    "cohomological_holonomy_std": 0.053619314013575614
+  },
+  "ppo": {
+    "clean_pass_at_1_mean": 0.0,
+    "clean_pass_at_1_std": 0.0,
+    "circular_trap_rate_mean": 1.0,
+    "circular_trap_rate_std": 0.0,
+    "mean_loop_count_mean": 7.962000000000001,
+    "mean_loop_count_std": 0.019390719429665325,
+    "cohomological_holonomy_mean": 11.03767570323657,
+    "cohomological_holonomy_std": 0.026881245003402648
+  }
+}
