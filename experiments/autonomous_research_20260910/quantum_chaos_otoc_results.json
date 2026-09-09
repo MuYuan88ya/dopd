@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "theorem": "Theorem 66: Quantum Chaos, Out-of-Time-Order Correlators (OTOC) & Lyapunov Scrambling Immunity",
+    "date": "2026-09-10",
+    "n_seeds": 5,
+    "n_problems": 40,
+    "n_rollouts": 16,
+    "n_steps": 32
+  },
+  "flowbalance": {
+    "greedy_pass_mean": 1.0,
+    "greedy_pass_std": 0.0,
+    "sampled_pass_mean": 1.0,
+    "sampled_pass_std": 0.0,
+    "otoc_defect_mean": 0.0,
+    "otoc_defect_std": 0.0,
+    "lyapunov_exponent_mean": 0.0,
+    "lyapunov_exponent_std": 0.0,
+    "scramble_trap_rate_mean": 0.0,
+    "scramble_trap_rate_std": 0.0,
+    "scramble_fidelity_mean": 0.9995056873714864,
+    "scramble_fidelity_std": 8.407741209483458e-06
+  },
+  "grpo": {
+    "greedy_pass_mean": 0.0,
+    "greedy_pass_std": 0.0,
+    "sampled_pass_mean": 0.0,
+    "sampled_pass_std": 0.0,
+    "otoc_defect_mean": 0.27074313452126664,
+    "otoc_defect_std": 0.00030854987834228457,
+    "lyapunov_exponent_mean": 0.4220787743925645,
+    "lyapunov_exponent_std": 0.0002877086377785813,
+    "scramble_trap_rate_mean": 1.0,
+    "scramble_trap_rate_std": 0.0,
+    "scramble_fidelity_mean": 0.7292568654787333,
+    "scramble_fidelity_std": 0.0003085498783423187
+  },
+  "ppo": {
+    "greedy_pass_mean": 0.0,
+    "greedy_pass_std": 0.0,
+    "sampled_pass_mean": 0.0,
+    "sampled_pass_std": 0.0,
+    "otoc_defect_mean": 0.1563262518401374,
+    "otoc_defect_std": 0.00028601571938465035,
+    "lyapunov_exponent_mean": 0.28476693254680585,
+    "lyapunov_exponent_std": 0.00045287178189683914,
+    "scramble_trap_rate_mean": 1.0,
+    "scramble_trap_rate_std": 0.0,
+    "scramble_fidelity_mean": 0.8436737481598625,
+    "scramble_fidelity_std": 0.0002860157193846514
+  }
+}
