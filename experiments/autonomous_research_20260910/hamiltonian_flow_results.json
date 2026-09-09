@@ -1,0 +1,32 @@
+{
+  "ppo_discounted": {
+    "full_pass_mean": 4.425485058878935e-08,
+    "full_pass_std": 5.0280114117916834e-08,
+    "step_acc_mean": 0.35554414670914414,
+    "step_acc_std": 0.03173301377719815,
+    "early_acc_mean": 0.33188886046409605,
+    "late_acc_mean": 0.3847226478159428,
+    "grad_ratio_mean": 0.3536331062938614,
+    "grad_ratio_std": 0.08449702092939605
+  },
+  "grpo": {
+    "full_pass_mean": 2.3230584202621724e-08,
+    "full_pass_std": 0.0,
+    "step_acc_mean": 0.3333333432674408,
+    "step_acc_std": 0.0,
+    "early_acc_mean": 0.3333333432674408,
+    "late_acc_mean": 0.3333333432674408,
+    "grad_ratio_mean": 0.0,
+    "grad_ratio_std": 0.0
+  },
+  "hamiltonian_flow": {
+    "full_pass_mean": 0.7674944224261404,
+    "full_pass_std": 0.0026301175571252335,
+    "step_acc_mean": 0.9835970655083657,
+    "step_acc_std": 0.000210606631536062,
+    "early_acc_mean": 0.9838650822639465,
+    "late_acc_mean": 0.9835185766220093,
+    "grad_ratio_mean": 1.3234961150504567,
+    "grad_ratio_std": 0.0397499073882609
+  }
+}
