@@ -1,0 +1,32 @@
+{
+  "flowbalance": {
+    "pass_at_1_mean": 0.8979999999999999,
+    "pass_at_1_std": 0.04166533331199931,
+    "geodesic_energy_mean": 0.7919850905071943,
+    "geodesic_energy_std": 0.25676851141622375,
+    "tortuosity_mean": 1.2225244070857524,
+    "tortuosity_std": 0.025335099648005583,
+    "curvature_roughness_mean": 0.09016959374025464,
+    "curvature_roughness_std": 0.015738320273048185
+  },
+  "grpo": {
+    "pass_at_1_mean": 0.8299999999999998,
+    "pass_at_1_std": 0.06449806198638841,
+    "geodesic_energy_mean": 1.1941486036162823,
+    "geodesic_energy_std": 0.4222199141508642,
+    "tortuosity_mean": 1.2972645951079564,
+    "tortuosity_std": 0.054566245284454175,
+    "curvature_roughness_mean": 0.21378945535700772,
+    "curvature_roughness_std": 0.09952878381024223
+  },
+  "ppo": {
+    "pass_at_1_mean": 0.8200000000000001,
+    "pass_at_1_std": 0.06356099432828283,
+    "geodesic_energy_mean": 1.2179883922412993,
+    "geodesic_energy_std": 0.39166348749618674,
+    "tortuosity_mean": 1.304649099896194,
+    "tortuosity_std": 0.044034652610559756,
+    "curvature_roughness_mean": 0.20942143865488472,
+    "curvature_roughness_std": 0.0888753977428321
+  }
+}
