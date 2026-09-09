@@ -1,0 +1,112 @@
+{
+  "Standard_GRPO": {
+    "pass1_mean": 0.0,
+    "pass1_std": 0.0,
+    "pass1_ci95": 0.0,
+    "hard_pass_mean": 0.0,
+    "hard_pass_std": 0.0,
+    "hard_pass_ci95": 0.0,
+    "raw_pass1": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "raw_hard_pass": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "FlowBalance_TB": {
+    "pass1_mean": 0.0,
+    "pass1_std": 0.0,
+    "pass1_ci95": 0.0,
+    "hard_pass_mean": 0.0,
+    "hard_pass_std": 0.0,
+    "hard_pass_ci95": 0.0,
+    "raw_pass1": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "raw_hard_pass": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "SubTB_Uniform": {
+    "pass1_mean": 0.5,
+    "pass1_std": 1.0,
+    "pass1_ci95": 0.8765386471799175,
+    "hard_pass_mean": 0.0,
+    "hard_pass_std": 0.0,
+    "hard_pass_ci95": 0.0,
+    "raw_pass1": [
+      0.0,
+      0.025,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "raw_hard_pass": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "EW_SubTB": {
+    "pass1_mean": 60.5,
+    "pass1_std": 5.787918451395113,
+    "pass1_ci95": 5.073334209373556,
+    "hard_pass_mean": 40.0,
+    "hard_pass_std": 11.40175425099138,
+    "hard_pass_ci95": 9.994078246641857,
+    "raw_pass1": [
+      0.675,
+      0.625,
+      0.5,
+      0.625,
+      0.6
+    ],
+    "raw_hard_pass": [
+      0.6,
+      0.45,
+      0.3,
+      0.35,
+      0.3
+    ]
+  },
+  "C_FlowBalance_Full": {
+    "pass1_mean": 59.0,
+    "pass1_std": 6.244997998398399,
+    "pass1_ci95": 5.473982097157426,
+    "hard_pass_mean": 43.0,
+    "hard_pass_std": 4.0,
+    "hard_pass_ci95": 3.50615458871967,
+    "raw_pass1": [
+      0.575,
+      0.625,
+      0.475,
+      0.625,
+      0.65
+    ],
+    "raw_hard_pass": [
+      0.45,
+      0.45,
+      0.35,
+      0.45,
+      0.45
+    ]
+  }
+}
