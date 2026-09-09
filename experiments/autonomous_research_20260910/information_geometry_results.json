@@ -1,0 +1,32 @@
+{
+  "flow": {
+    "sound_subspace_mass_mean": 0.9921848773956299,
+    "sound_subspace_mass_std": 0.0,
+    "pythagorean_defect_mean": 0.05279731936752796,
+    "pythagorean_defect_std": 0.0,
+    "geodesic_energy_mean": 5.799993704899274e-06,
+    "geodesic_energy_std": 0.0,
+    "orthogonal_preservation_mean": 1.0,
+    "orthogonal_preservation_std": 0.0
+  },
+  "grpo": {
+    "sound_subspace_mass_mean": 0.5280973017215729,
+    "sound_subspace_mass_std": 0.03366551500566121,
+    "pythagorean_defect_mean": 0.8818522214889526,
+    "pythagorean_defect_std": 0.1462931345034429,
+    "geodesic_energy_mean": 0.00017334566779273868,
+    "geodesic_energy_std": 1.7863077047991103e-05,
+    "orthogonal_preservation_mean": 0.9312826633453369,
+    "orthogonal_preservation_std": 0.030843940032118943
+  },
+  "ppo": {
+    "sound_subspace_mass_mean": 0.18357767164707184,
+    "sound_subspace_mass_std": 0.00909190580022926,
+    "pythagorean_defect_mean": 0.5634060688316822,
+    "pythagorean_defect_std": 0.05361070933942918,
+    "geodesic_energy_mean": 2.4113471204916514e-05,
+    "geodesic_energy_std": 4.71524384580558e-06,
+    "orthogonal_preservation_mean": 0.9883745789527894,
+    "orthogonal_preservation_std": 0.004565746978698058
+  }
+}
