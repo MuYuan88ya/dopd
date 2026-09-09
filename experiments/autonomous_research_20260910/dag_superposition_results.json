@@ -1,0 +1,32 @@
+{
+  "grpo": {
+    "total_pass_mean": 0.9853542336868776,
+    "total_pass_std": 0.001376622409215101,
+    "entropy_mean": 1.2393800241720723,
+    "entropy_std": 0.2497196721010541,
+    "min_prob_mean": 0.01878304187583555,
+    "l3_constrained_mean": 0.9846129821898447,
+    "l3_constrained_std": 0.0033468011765596917,
+    "paths_retained_mean": 0.6
+  },
+  "ppo_step": {
+    "total_pass_mean": 0.32744896084992153,
+    "total_pass_std": 0.0006965067655780142,
+    "entropy_mean": 1.6512943914360392,
+    "entropy_std": 0.08634063098440466,
+    "min_prob_mean": 0.025238919191265852,
+    "l3_constrained_mean": 0.3308376569798881,
+    "l3_constrained_std": 0.0002353553900490345,
+    "paths_retained_mean": 0.5333333333333333
+  },
+  "superposition_flow": {
+    "total_pass_mean": 0.9732224220474315,
+    "total_pass_std": 0.0014019241522992055,
+    "entropy_mean": 1.5522883184159206,
+    "entropy_std": 0.08519632484123502,
+    "min_prob_mean": 0.03844551972404568,
+    "l3_constrained_mean": 0.9784969934668217,
+    "l3_constrained_std": 0.00414405305779348,
+    "paths_retained_mean": 0.8666666666666666
+  }
+}
