@@ -1,0 +1,32 @@
+{
+  "flow": {
+    "clean_pass_greedy_mean": 1.0,
+    "clean_pass_greedy_std": 0.0,
+    "clean_pass_uv_shift_mean": 0.1608,
+    "clean_pass_uv_shift_std": 0.007440430095095317,
+    "beta_function_norm_mean": 0.0,
+    "beta_function_norm_std": 0.0,
+    "scale_invariance_fidelity_mean": 0.16079999839200004,
+    "scale_invariance_fidelity_std": 0.007440430020691019
+  },
+  "grpo": {
+    "clean_pass_greedy_mean": 0.0,
+    "clean_pass_greedy_std": 0.0,
+    "clean_pass_uv_shift_mean": 0.0,
+    "clean_pass_uv_shift_std": 0.0,
+    "beta_function_norm_mean": 0.530786960280966,
+    "beta_function_norm_std": 0.6764323929226063,
+    "scale_invariance_fidelity_mean": 0.0,
+    "scale_invariance_fidelity_std": 0.0
+  },
+  "ppo": {
+    "clean_pass_greedy_mean": 0.0,
+    "clean_pass_greedy_std": 0.0,
+    "clean_pass_uv_shift_mean": 0.0,
+    "clean_pass_uv_shift_std": 0.0,
+    "beta_function_norm_mean": 0.17956768097355963,
+    "beta_function_norm_std": 0.13948250964355288,
+    "scale_invariance_fidelity_mean": 0.0,
+    "scale_invariance_fidelity_std": 0.0
+  }
+}
